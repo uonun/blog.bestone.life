@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="../lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="../css/main.css?v=6.4.2" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16-next.png?v=6.4.2">
+
+
+  <link rel="mask-icon" href="../images/logo.svg?v=6.4.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.4.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="架构是这样定义的 每个系统都有一个架构 架构由架构元素以及相互之间的关系构成 系统是为了满足 利益相关者（stakeholder） 的需求而构建的 利益相关者都有自己的关注点（concerns） 架构由架构文档描述 架构文档描述了一系列的架构视角 每个视角都解决并且对应到利益相关者的关注点。  架构师的首要任务是尽最大可能找出所有利益相关者，业务方，产品经理，客户/用户，开发经理，工程师，项目经理">
+<meta name="keywords" content="keywords">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Understanding Architecture">
+<meta property="og:url" content="http://www.udnz.com/2018/09/30/Understanding-Architecture/index.html">
+<meta property="og:site_name" content="UDNZ">
+<meta property="og:description" content="架构是这样定义的 每个系统都有一个架构 架构由架构元素以及相互之间的关系构成 系统是为了满足 利益相关者（stakeholder） 的需求而构建的 利益相关者都有自己的关注点（concerns） 架构由架构文档描述 架构文档描述了一系列的架构视角 每个视角都解决并且对应到利益相关者的关注点。  架构师的首要任务是尽最大可能找出所有利益相关者，业务方，产品经理，客户/用户，开发经理，工程师，项目经理">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://upload-images.jianshu.io/upload_images/1411204-7b51d528373115c0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700">
+<meta property="og:updated_time" content="2018-09-30T07:13:43.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Understanding Architecture">
+<meta name="twitter:description" content="架构是这样定义的 每个系统都有一个架构 架构由架构元素以及相互之间的关系构成 系统是为了满足 利益相关者（stakeholder） 的需求而构建的 利益相关者都有自己的关注点（concerns） 架构由架构文档描述 架构文档描述了一系列的架构视角 每个视角都解决并且对应到利益相关者的关注点。  架构师的首要任务是尽最大可能找出所有利益相关者，业务方，产品经理，客户/用户，开发经理，工程师，项目经理">
+<meta name="twitter:image" content="https://upload-images.jianshu.io/upload_images/1411204-7b51d528373115c0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700">
+
+
+
+  <link rel="alternate" href="../../../../atom.xml" title="UDNZ" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="http://www.udnz.com/2018/09/30/Understanding-Architecture/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Understanding Architecture | UDNZ</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">UDNZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.udnz.com">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Austin Luo">
+      <meta itemprop="description" content="descending">
+      <meta itemprop="image" content="../../../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="UDNZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Understanding Architecture
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-09-30 15:13:43" itemprop="dateCreated datePublished" datetime="2018-09-30T15:13:43+08:00">2018-09-30</time>
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="../../../../categories/Architecture/" itemprop="url" rel="index"><span itemprop="name">Architecture</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="架构是这样定义的"><a href="#架构是这样定义的" class="headerlink" title="架构是这样定义的"></a>架构是这样定义的</h1><ul>
+<li>每个系统都有一个架构</li>
+<li>架构由架构元素以及相互之间的关系构成</li>
+<li>系统是为了满足 <strong>利益相关者（stakeholder）</strong> 的需求而构建的</li>
+<li>利益相关者都有自己的<strong>关注点（concerns）</strong></li>
+<li>架构由架构文档描述</li>
+<li>架构文档描述了一系列的<strong>架构视角</strong></li>
+<li>每个视角都解决并且对应到利益相关者的关注点。</li>
+</ul>
+<p>架构师的首要任务是尽最大可能找出所有利益相关者，业务方，产品经理，客户/用户，开发经理，工程师，项目经理，测试人员，运维人员，产品运营人员等等都有可能是利益相关者，架构师要充分和利益相关者沟通，深入理解他们的关注点和痛点，并出架构解决这些关注点。架构师常犯错误是漏掉重要的利益相关者，沟通不充分，都会造成架构有欠缺，不能满足利益相关者的需求。利益相关者的关注点是有可能冲突的，比如管理层（可管理性）vs技术方（性能），业务方（多快好省）vs 技术方（可靠稳定），这需要架构师去灵活平衡，如何平衡体现了架构师的水平和价值。</p>
+<blockquote>
+<p>Architecture represents the significant design decisions that shape a system, where significant is measured by cost of change.</p>
+<p>—- Grady Booch, UML的创始人之一</p>
+<p>架构表示对一个系统的成型起关键作用的设计决策，这里的关键性是由“改变它”的成本来决定的。</p>
+</blockquote>
+<p>微服务中每个服务可以独立演变，它的cost of change比较小，整体架构比较灵活，是一种支持创新的演化式架构。</p>
+<h1 id="Architecture-Requirements"><a href="#Architecture-Requirements" class="headerlink" title="Architecture Requirements"></a>Architecture Requirements</h1><table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Easy to separate</td>
+<td>Autonomy</td>
+<td>易分离，自治性</td>
+</tr>
+<tr>
+<td>Easy to understand</td>
+<td>Understandablility</td>
+<td>可理解性</td>
+</tr>
+<tr>
+<td>Easy to extend</td>
+<td>Extensibility</td>
+<td>可延展性</td>
+</tr>
+<tr>
+<td>Easy to change</td>
+<td>Changeability</td>
+<td>可变性</td>
+</tr>
+<tr>
+<td>Easy to replace</td>
+<td>Replaceability</td>
+<td>可替换性</td>
+</tr>
+<tr>
+<td>Easy to deploy</td>
+<td>Deployability</td>
+<td>可部署性</td>
+</tr>
+<tr>
+<td>Easy to scale</td>
+<td>Scalability</td>
+<td>伸缩性，可扩展性</td>
+</tr>
+<tr>
+<td>Easy to recover</td>
+<td>Resilience</td>
+<td>可恢复性</td>
+</tr>
+<tr>
+<td>Easy to connect</td>
+<td>Uniform interface</td>
+<td>易连接，易集成，统一接口</td>
+</tr>
+<tr>
+<td>Easy to afford</td>
+<td>Cost-efficiency</td>
+<td>成本效率，性价比</td>
+</tr>
+</tbody>
+</table>
+<p>架构的目标是用于管理复杂性、易变性和不确定性，以确保在长期的系统演化过程中，一部分架构的变化不会对架构的其它部分产生不必要的负面影响。这样做可以确保业务和研发效率的敏捷，让应用的易变部分能够频繁地变化，对应用的其它部分的影响尽可能的小。</p>
+<h1 id="微服务更多是关于组织和团队，而不是技术"><a href="#微服务更多是关于组织和团队，而不是技术" class="headerlink" title="微服务更多是关于组织和团队，而不是技术"></a>微服务更多是关于组织和团队，而不是技术</h1><blockquote>
+<p>organizations which design systems … are constrained to produce designs which are copies of the communication structures of these organizations.</p>
+<p>康威定律：设计系统的组织，其产生的设计和架构等价于组织间的沟通结构.</p>
+</blockquote>
+<p><img src="https://upload-images.jianshu.io/upload_images/1411204-7b51d528373115c0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="image"></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="../Kubernetes/" rel="next" title="Kubernetes 环境搭建">
+                <i class="fa fa-chevron-left"></i> Kubernetes 环境搭建
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="../../../10/01/通过-SSH-隧道链接远程-MySQL/" rel="prev" title="通过 SSH 隧道链接远程 MySQL">
+                通过 SSH 隧道链接远程 MySQL <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Austin Luo</p>
+              <p class="site-description motion-element" itemprop="description">descending</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="../../../../archives/">
+                
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="../../../../categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="../../../../tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="../../../../atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#架构是这样定义的"><span class="nav-number">1.</span> <span class="nav-text">架构是这样定义的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Architecture-Requirements"><span class="nav-number">2.</span> <span class="nav-text">Architecture Requirements</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#微服务更多是关于组织和团队，而不是技术"><span class="nav-number">3.</span> <span class="nav-text">微服务更多是关于组织和团队，而不是技术</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Austin Luo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Muse</a> v6.4.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="../../../../lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="../../../../js/src/utils.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="../../../../js/src/motion.js?v=6.4.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../js/src/scrollspy.js?v=6.4.2"></script>
+<script type="text/javascript" src="../../../../js/src/post-details.js?v=6.4.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="../../../../js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

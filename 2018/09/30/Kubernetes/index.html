@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="../lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="../css/main.css?v=6.4.2" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="../images/apple-touch-icon-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="../images/favicon-32x32-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="../images/favicon-16x16-next.png?v=6.4.2">
+
+
+  <link rel="mask-icon" href="../images/logo.svg?v=6.4.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '6.4.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="kubernetes指引：https://kubernetes.io/docs/tasks/tools/install-kubectl/ 安装 VM 驱动 腾讯云 CVM 未能启用驱动启动 minikube，安装驱动的过程可忽略。  - VirtualBox CentOS：虚拟机不支持内部 VM，未在物理机上尝试  123456789cd /etc/yum.repos.d/wget http://">
+<meta name="keywords" content="k8s,kubernetes">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes 环境搭建">
+<meta property="og:url" content="http://www.udnz.com/2018/09/30/Kubernetes/index.html">
+<meta property="og:site_name" content="UDNZ">
+<meta property="og:description" content="kubernetes指引：https://kubernetes.io/docs/tasks/tools/install-kubectl/ 安装 VM 驱动 腾讯云 CVM 未能启用驱动启动 minikube，安装驱动的过程可忽略。  - VirtualBox CentOS：虚拟机不支持内部 VM，未在物理机上尝试  123456789cd /etc/yum.repos.d/wget http://">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2018-09-30T09:35:40.982Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Kubernetes 环境搭建">
+<meta name="twitter:description" content="kubernetes指引：https://kubernetes.io/docs/tasks/tools/install-kubectl/ 安装 VM 驱动 腾讯云 CVM 未能启用驱动启动 minikube，安装驱动的过程可忽略。  - VirtualBox CentOS：虚拟机不支持内部 VM，未在物理机上尝试  123456789cd /etc/yum.repos.d/wget http://">
+
+
+
+  <link rel="alternate" href="../../../../atom.xml" title="UDNZ" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="http://www.udnz.com/2018/09/30/Kubernetes/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>Kubernetes 环境搭建 | UDNZ</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">UDNZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="Toggle navigation bar">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />Home</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />Archives</a>
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.udnz.com">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Austin Luo">
+      <meta itemprop="description" content="descending">
+      <meta itemprop="image" content="../../../../images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="UDNZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Kubernetes 环境搭建
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">Posted on</span>
+              
+
+              
+                
+              
+
+              <time title="Created: 2018-09-30 11:08:49 / Modified: 17:35:40" itemprop="dateCreated datePublished" datetime="2018-09-30T11:08:49+08:00">2018-09-30</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">In</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="../../../../categories/Micro-Service/" itemprop="url" rel="index"><span itemprop="name">Micro Service</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="kubernetes"><a href="#kubernetes" class="headerlink" title="kubernetes"></a>kubernetes</h1><p>指引：<a href="https://kubernetes.io/docs/tasks/tools/install-kubectl/" target="_blank" rel="noopener">https://kubernetes.io/docs/tasks/tools/install-kubectl/</a></p>
+<h2 id="安装-VM-驱动"><a href="#安装-VM-驱动" class="headerlink" title="安装 VM 驱动"></a>安装 VM 驱动</h2><blockquote>
+<p>腾讯云 CVM 未能启用驱动启动 minikube，安装驱动的过程可忽略。</p>
+</blockquote>
+<h2 id="VirtualBox"><a href="#VirtualBox" class="headerlink" title="- VirtualBox"></a>- VirtualBox</h2><blockquote>
+<p>CentOS：虚拟机不支持内部 VM，未在物理机上尝试</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">cd</span> /etc/yum.repos.d/</span><br><span class="line">wget http://download.virtualbox.org/virtualbox/rpm/rhel/virtualbox.repo</span><br><span class="line">yum update</span><br><span class="line"></span><br><span class="line">rpm -Uvh https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm</span><br><span class="line">yum install -y binutils gcc make patch libgomp glibc-headers glibc-devel kernel-headers kernel-devel dkms</span><br><span class="line">yum install -y VirtualBox-5.2</span><br><span class="line"></span><br><span class="line">service vboxdrv start</span><br></pre></td></tr></table></figure>
+<ul>
+<li><a href="https://www.if-not-true-then-false.com/2010/install-virtualbox-with-yum-on-fedora-centos-red-hat-rhel/" target="_blank" rel="noopener">https://www.if-not-true-then-false.com/2010/install-virtualbox-with-yum-on-fedora-centos-red-hat-rhel/</a></li>
+<li><a href="https://www.virtualbox.org/wiki/Linux_Downloads" target="_blank" rel="noopener">https://www.virtualbox.org/wiki/Linux_Downloads</a></li>
+<li><a href="https://www.cnblogs.com/harry-h/p/6405433.html" target="_blank" rel="noopener">https://www.cnblogs.com/harry-h/p/6405433.html</a></li>
+</ul>
+<blockquote>
+<p>MAC 上可以直接下载安装：<a href="https://www.virtualbox.org/wiki/Downloads" target="_blank" rel="noopener">https://www.virtualbox.org/wiki/Downloads</a></p>
+</blockquote>
+<h2 id="KVM2"><a href="#KVM2" class="headerlink" title="- KVM2"></a>- KVM2</h2><blockquote>
+<p>安装成功，但 <code>minikube start</code> 时未能尝试成功</p>
+</blockquote>
+<p><a href="https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#kvm2-driver" target="_blank" rel="noopener">https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#kvm2-driver</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">yum -y install libvirt-daemon-kvm qemu-kvm</span><br><span class="line"></span><br><span class="line">curl -Lo docker-machine-driver-kvm2 https://storage.googleapis.com/minikube/releases/latest/docker-machine-driver-kvm2 \</span><br><span class="line">&amp;&amp; chmod +x docker-machine-driver-kvm2 \</span><br><span class="line">&amp;&amp; sudo cp docker-machine-driver-kvm2 /usr/<span class="built_in">local</span>/bin/ \</span><br><span class="line">&amp;&amp; rm docker-machine-driver-kvm2</span><br></pre></td></tr></table></figure>
+<p>附：查看虚拟机网络以及使用不同的网络启动 minikube</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">yum -y install libvirt virt-install bridge-utils</span><br><span class="line"><span class="comment"># 查看虚拟机网络</span></span><br><span class="line">virsh net-list --all</span><br><span class="line"><span class="comment"># 使用不同的虚拟机网络(minikube-net)</span></span><br><span class="line">minikube start --vm-driver kvm2 --kvm-network minikube-net</span><br></pre></td></tr></table></figure>
+<h2 id="其他驱动"><a href="#其他驱动" class="headerlink" title="- 其他驱动"></a>- 其他驱动</h2><p>指引：<a href="https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#kvm-driver" target="_blank" rel="noopener">https://github.com/kubernetes/minikube/blob/master/docs/drivers.md#kvm-driver</a></p>
+<h2 id="安装-kubectl"><a href="#安装-kubectl" class="headerlink" title="安装 kubectl"></a>安装 kubectl</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CentOS</span></span><br><span class="line">cat &lt;&lt;EOF &gt; /etc/yum.repos.d/kubernetes.repo</span><br><span class="line">[kubernetes]</span><br><span class="line">name=Kubernetes</span><br><span class="line">baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64</span><br><span class="line">enabled=1</span><br><span class="line">gpgcheck=1</span><br><span class="line">repo_gpgcheck=1</span><br><span class="line">gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg</span><br><span class="line">EOF</span><br><span class="line">yum install -y kubectl</span><br><span class="line"></span><br><span class="line"><span class="comment"># MAC: 方式一</span></span><br><span class="line">brew install kubernetes-cli</span><br><span class="line"><span class="comment"># MAC：方式二</span></span><br><span class="line">curl -Lo kubectl http://storage.googleapis.com/kubernetes-release/release/v1.5.1/bin/darwin/amd64/kubectl &amp;&amp; chmod +x kubectl &amp;&amp; sudo mv kubectl /usr/<span class="built_in">local</span>/bin/</span><br><span class="line"></span><br><span class="line"><span class="comment"># 安装校验</span></span><br><span class="line">kubectl version</span><br></pre></td></tr></table></figure>
+<h2 id="安装-minikube"><a href="#安装-minikube" class="headerlink" title="安装 minikube"></a>安装 minikube</h2><p>指引：<a href="https://github.com/kubernetes/minikube/releases" target="_blank" rel="noopener">https://github.com/kubernetes/minikube/releases</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># CentOS</span></span><br><span class="line">curl -Lo minikube https://storage.googleapis.com/minikube/releases/v0.29.0/minikube-linux-amd64 \</span><br><span class="line">    &amp;&amp; chmod +x minikube \</span><br><span class="line">    &amp;&amp; sudo cp minikube /usr/<span class="built_in">local</span>/bin/ \</span><br><span class="line">    &amp;&amp; rm minikube</span><br><span class="line"></span><br><span class="line"><span class="comment"># MAC</span></span><br><span class="line">brew cask install minikube</span><br></pre></td></tr></table></figure>
+<hr>
+<h1 id="运行"><a href="#运行" class="headerlink" title="运行"></a>运行</h1><p><strong>（使用 KVM2 驱动）运行之前</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 启动服务</span></span><br><span class="line">systemctl <span class="built_in">enable</span> libvirtd &amp;&amp; systemctl start libvirtd</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看进程文件</span></span><br><span class="line">ls -l /var/run/libvirt/libvirt-sock</span><br><span class="line"></span><br><span class="line"><span class="comment"># 若进程文件不存在，则修改配置：</span></span><br><span class="line">vi /etc/libvirt/libvirtd.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 取消行前注释，重新启动服务</span></span><br><span class="line"><span class="comment">#unix_sock_dir = "/var/run/libvirt"</span></span><br></pre></td></tr></table></figure>
+<h2 id="拉取-k8s-相关镜像"><a href="#拉取-k8s-相关镜像" class="headerlink" title="拉取 k8s 相关镜像"></a>拉取 k8s 相关镜像</h2><p>原本在 <code>minikube start</code> 命令中会自动拉取镜像，但是因为众所周知的原因，我们无法成功拉取到镜像。这里可以使用阿里 docker 容器镜像服务：<a href="https://dev.aliyun.com/search.html" target="_blank" rel="noopener">https://dev.aliyun.com/search.html</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 进入虚拟机拉取，而非本机</span></span><br><span class="line">minikube ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 拉取镜像</span></span><br><span class="line">docker pull registry.cn-hangzhou.aliyuncs.com/k8sth/kube-apiserver-amd64:v1.10.0</span><br><span class="line">docker pull registry.cn-hangzhou.aliyuncs.com/k8sth/kube-controller-manager-amd64:v1.10.0</span><br><span class="line">docker pull registry.cn-hangzhou.aliyuncs.com/k8sth/kube-scheduler-amd64:v1.10.0</span><br><span class="line">docker pull registry.cn-hangzhou.aliyuncs.com/k8sth/etcd-amd64:3.1.12</span><br><span class="line">docker pull registry.cn-shenzhen.aliyuncs.com/kubernetes_google/kubernetes-dashboard-amd64:v1.10.0</span><br><span class="line"></span><br><span class="line"><span class="comment"># 修改 tag</span></span><br><span class="line">docker tag registry.cn-hangzhou.aliyuncs.com/k8sth/kube-apiserver-amd64:v1.10.0 k8s.gcr.io/kube-apiserver-amd64:v1.10.0</span><br><span class="line">docker tag registry.cn-hangzhou.aliyuncs.com/k8sth/kube-controller-manager-amd64:v1.10.0 k8s.gcr.io/kube-controller-manager-amd64:v1.10.0</span><br><span class="line">docker tag registry.cn-hangzhou.aliyuncs.com/k8sth/kube-scheduler-amd64:v1.10.0 k8s.gcr.io/kube-scheduler-amd64:v1.10.0</span><br><span class="line">docker tag registry.cn-hangzhou.aliyuncs.com/k8sth/etcd-amd64:3.1.12 k8s.gcr.io/etcd-amd64:3.1.12</span><br><span class="line">docker tag registry.cn-shenzhen.aliyuncs.com/kubernetes_google/kubernetes-dashboard-amd64:v1.10.0 k8s.gcr.io/kubernetes-dashboard-amd64:v1.10.0</span><br></pre></td></tr></table></figure>
+<h2 id="Kubenetes"><a href="#Kubenetes" class="headerlink" title="Kubenetes"></a>Kubenetes</h2><p>指引：<a href="https://kubernetes.io/docs/setup/minikube/#quickstart" target="_blank" rel="noopener">https://kubernetes.io/docs/setup/minikube/#quickstart</a></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 在代理下运行时，需要指定正确的代理，否则 minikube 在内部访问网络会有问题</span></span><br><span class="line"><span class="comment"># 注意，代理地址应当是在虚拟机中能够访问的地址，不能使用 127.0.0.1、localhost 这种</span></span><br><span class="line">https_proxy=http://web-proxy.oa.com:8080</span><br><span class="line">minikube start \</span><br><span class="line">    --docker-env http_proxy=http://web-proxy.oa.com:8080 \</span><br><span class="line">    --docker-env https_proxy=http://web-proxy.oa.com:8080 \</span><br><span class="line">    --docker-env no_proxy=192.168.99.0/24</span><br><span class="line">    --vm-driver=none</span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动 k8s（ CentOS 上不使用任何 vm 驱动，MAC 上默认可使用 VirtualBox）</span></span><br><span class="line">minikube start \</span><br><span class="line">    --network-plugin=cni \</span><br><span class="line">    --container-runtime=containerd \</span><br><span class="line">    --bootstrapper=kubeadm</span><br><span class="line">    --vm-driver=none</span><br><span class="line"></span><br><span class="line"><span class="comment"># Dashboard</span></span><br><span class="line"><span class="comment"># https://github.com/kubernetes/dashboard</span></span><br><span class="line">kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml</span><br><span class="line">kubectl proxy</span><br><span class="line"></span><br><span class="line"><span class="comment"># 部署及运行镜像</span></span><br><span class="line">kubectl run hello-minikube --image=registry.cn-hangzhou.aliyuncs.com/acs/echoserver:1.4 --port=8080</span><br><span class="line"></span><br><span class="line"><span class="comment"># 导出服务</span></span><br><span class="line">kubectl expose deployment hello-minikube --<span class="built_in">type</span>=NodePort</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询 Pod</span></span><br><span class="line">kubectl get pod</span><br><span class="line">kubectl get pods --all-namespaces</span><br><span class="line"></span><br><span class="line"><span class="comment"># 查看状态</span></span><br><span class="line">kubectl describe --namespace=kube-system po kubernetes-dashboard-6f4cfc5d87-d647l</span><br><span class="line">kubectl logs kubernetes-dashboard-6f4cfc5d87-x976v --namespace=kube-system</span><br><span class="line">kubectl cluster-info</span><br><span class="line"></span><br><span class="line"><span class="comment"># 调用服务</span></span><br><span class="line">curl $(minikube service hello-minikube --url)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除服务</span></span><br><span class="line">kubectl delete services hello-minikube</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除部署</span></span><br><span class="line">kubectl delete deployment hello-minikube</span><br><span class="line"></span><br><span class="line"><span class="comment"># 停止 k8s</span></span><br><span class="line">minikube stop</span><br></pre></td></tr></table></figure>
+<h2 id="向-kubernetes-添加账号"><a href="#向-kubernetes-添加账号" class="headerlink" title="向 kubernetes 添加账号"></a>向 kubernetes 添加账号</h2><p><a href="https://github.com/kubernetes/dashboard/wiki/Creating-sample-user" target="_blank" rel="noopener">https://github.com/kubernetes/dashboard/wiki/Creating-sample-user</a></p>
+<h1 id="FAQ"><a href="#FAQ" class="headerlink" title="FAQ"></a>FAQ</h1><p><strong>failed to create kubelet: misconfiguration: kubelet cgroup driver: “cgroupfs” is different from docker cgr…driver: “systemd”</strong></p>
+<p>该问题因为 docker 的配置和 kubelet 的配置不一致导致。</p>
+<p>使用 docker info 打印 docker 信息：</p>
+<figure class="highlight vhdl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@VM_0_16_centos kubelet.service.d]# docker info | grep Driver</span><br><span class="line"> <span class="literal">WARNING</span>: Usage <span class="keyword">of</span> loopback devices <span class="keyword">is</span> strongly discouraged <span class="keyword">for</span> production <span class="keyword">use</span>. <span class="keyword">Use</span> `<span class="comment">--storage-opt dm.thinpooldev` to specify a custom block storage device.</span></span><br><span class="line">  <span class="literal">WARNING</span>: You<span class="symbol">'re</span> <span class="keyword">not</span> using the <span class="keyword">default</span> seccomp profile</span><br><span class="line">Storage Driver: devicemapper</span><br><span class="line">Logging Driver: journald</span><br><span class="line">Cgroup Driver: systemd</span><br></pre></td></tr></table></figure>
+<p>而查看 kubelet 服务的启动参数（<code>--cgroup-driver</code>），其设置为 <code>cgroupfs</code>：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[root@VM_0_16_centos kubelet.service.d]# more /etc/systemd/system/kubelet.service.d/10-kubeadm.conf</span><br><span class="line"></span><br><span class="line">[Unit]</span><br><span class="line"><span class="attribute">Wants</span>=docker.socket</span><br><span class="line"></span><br><span class="line">[Service]</span><br><span class="line">ExecStart=</span><br><span class="line"><span class="attribute">ExecStart</span>=/usr/bin/kubelet <span class="attribute">--hostname-override</span>=minikube <span class="attribute">--cluster-domain</span>=cluster.local <span class="attribute">--cgroup-driver</span>=cgroupfs <span class="attribute">--authorization-mode</span>=Webhook <span class="attribute">--client-ca-file</span>=/var/lib/minikube/certs/ca.crt <span class="attribute">--fail-swap-on</span>=<span class="literal">false</span> <span class="attribute">--kubeconfig</span>=/etc/kubernetes/ku</span><br><span class="line">belet.conf <span class="attribute">--bootstrap-kubeconfig</span>=/etc/kubernetes/bootstrap-kubelet.conf <span class="attribute">--pod-manifest-path</span>=/etc/kubernetes/manifests <span class="attribute">--allow-privileged</span>=<span class="literal">true</span> <span class="attribute">--cluster-dns</span>=10.96.0.10 <span class="attribute">--cadvisor-port</span>=0</span><br><span class="line"></span><br><span class="line">[Install]</span><br></pre></td></tr></table></figure>
+<p>此时，修改 docker 的服务参数（<code>vi /usr/lib/systemd/system/docker.service</code>），将其中的 <code>--exec-opt native.cgroupdriver</code> 参数值改为 <code>cgroupfs</code> 。</p>
+<p>然后，重启 docker，重启 kubelet</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload &amp;&amp; systemctl restart docker &amp;&amp; systemctl restart kubelet</span><br></pre></td></tr></table></figure>
+<h1 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h1><p><a href="https://www.jianshu.com/p/a42eeb66a19c" target="_blank" rel="noopener">https://www.jianshu.com/p/a42eeb66a19c</a></p>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="../../../../tags/k8s/" rel="tag"># k8s</a>
+          
+            <a href="../../../../tags/kubernetes/" rel="tag"># kubernetes</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="../Understanding-Architecture/" rel="prev" title="Understanding Architecture">
+                Understanding Architecture <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            Table of Contents
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            Overview
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Austin Luo</p>
+              <p class="site-description motion-element" itemprop="description">descending</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="../../../../archives/">
+                
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">posts</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="../../../../categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">3</span>
+                    <span class="site-state-item-name">categories</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="../../../../tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">4</span>
+                    <span class="site-state-item-name">tags</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="../../../../atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#kubernetes"><span class="nav-number">1.</span> <span class="nav-text">kubernetes</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-VM-驱动"><span class="nav-number">1.1.</span> <span class="nav-text">安装 VM 驱动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#VirtualBox"><span class="nav-number">1.2.</span> <span class="nav-text">- VirtualBox</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KVM2"><span class="nav-number">1.3.</span> <span class="nav-text">- KVM2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#其他驱动"><span class="nav-number">1.4.</span> <span class="nav-text">- 其他驱动</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-kubectl"><span class="nav-number">1.5.</span> <span class="nav-text">安装 kubectl</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装-minikube"><span class="nav-number">1.6.</span> <span class="nav-text">安装 minikube</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#运行"><span class="nav-number">2.</span> <span class="nav-text">运行</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#拉取-k8s-相关镜像"><span class="nav-number">2.1.</span> <span class="nav-text">拉取 k8s 相关镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Kubenetes"><span class="nav-number">2.2.</span> <span class="nav-text">Kubenetes</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#向-kubernetes-添加账号"><span class="nav-number">2.3.</span> <span class="nav-text">向 kubernetes 添加账号</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#FAQ"><span class="nav-number">3.</span> <span class="nav-text">FAQ</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#参考"><span class="nav-number">4.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Austin Luo</span>
+
+  
+
+  
+</div>
+
+
+
+
+  <div class="powered-by">Powered by <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> v3.7.1</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">Theme – <a class="theme-link" target="_blank" href="https://theme-next.org">NexT.Muse</a> v6.4.2</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="../../../../lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="../../../../lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="../../../../js/src/utils.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="../../../../js/src/motion.js?v=6.4.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="../../../../js/src/scrollspy.js?v=6.4.2"></script>
+<script type="text/javascript" src="../../../../js/src/post-details.js?v=6.4.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="../../../../js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
