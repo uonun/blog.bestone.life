@@ -108,18 +108,18 @@
 
 
 
-  <meta name="description" content="场景：  SSH 跳板机：10.0.0.1 MySQL 数据库：10.0.0.2:3306  MySQL 部署的机器不允许 SSH 连接，并且数据库端口只允许 localhost 或 10.0.0.1 这台跳板机访问，此时本机可以通过 ssh 连上跳板机，通过 ssh 建立的隧道端口转发连接上 MySQL 数据库。 1234567891011# 本机连接跳板机# 打开本机 13306 端口，代理到">
-<meta name="keywords" content="Linux,SSH">
+  <meta name="description" content="打开 Visual Studio Code 的设置，按如下配置即可： 12345&amp;#123;  // 找到您的 git 目录  &quot;terminal.integrated.shell.windows&quot;: &quot;C:\\Program Files (x86)\\Git\\bin\\bash.exe&quot;,  &quot;terminal.integrated.shellArgs.windows&quot;: [&quot;--login&quot;">
+<meta name="keywords" content="VSC">
 <meta property="og:type" content="article">
-<meta property="og:title" content="通过 SSH 隧道链接远程 MySQL">
-<meta property="og:url" content="https://www.udnz.com/2018/10/01/通过-SSH-隧道链接远程-MySQL/index.html">
+<meta property="og:title" content="在 Visual Studio Code 中使用 MINGW32 作为终端">
+<meta property="og:url" content="https://www.udnz.com/2018/10/08/在-Visual-Studio-Code-中使用-MINGW32-作为终端/index.html">
 <meta property="og:site_name" content="UDNZ">
-<meta property="og:description" content="场景：  SSH 跳板机：10.0.0.1 MySQL 数据库：10.0.0.2:3306  MySQL 部署的机器不允许 SSH 连接，并且数据库端口只允许 localhost 或 10.0.0.1 这台跳板机访问，此时本机可以通过 ssh 连上跳板机，通过 ssh 建立的隧道端口转发连接上 MySQL 数据库。 1234567891011# 本机连接跳板机# 打开本机 13306 端口，代理到">
+<meta property="og:description" content="打开 Visual Studio Code 的设置，按如下配置即可： 12345&amp;#123;  // 找到您的 git 目录  &quot;terminal.integrated.shell.windows&quot;: &quot;C:\\Program Files (x86)\\Git\\bin\\bash.exe&quot;,  &quot;terminal.integrated.shellArgs.windows&quot;: [&quot;--login&quot;">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2018-10-01T12:18:10.000Z">
+<meta property="og:updated_time" content="2018-10-08T09:09:18.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="通过 SSH 隧道链接远程 MySQL">
-<meta name="twitter:description" content="场景：  SSH 跳板机：10.0.0.1 MySQL 数据库：10.0.0.2:3306  MySQL 部署的机器不允许 SSH 连接，并且数据库端口只允许 localhost 或 10.0.0.1 这台跳板机访问，此时本机可以通过 ssh 连上跳板机，通过 ssh 建立的隧道端口转发连接上 MySQL 数据库。 1234567891011# 本机连接跳板机# 打开本机 13306 端口，代理到">
+<meta name="twitter:title" content="在 Visual Studio Code 中使用 MINGW32 作为终端">
+<meta name="twitter:description" content="打开 Visual Studio Code 的设置，按如下配置即可： 12345&amp;#123;  // 找到您的 git 目录  &quot;terminal.integrated.shell.windows&quot;: &quot;C:\\Program Files (x86)\\Git\\bin\\bash.exe&quot;,  &quot;terminal.integrated.shellArgs.windows&quot;: [&quot;--login&quot;">
 
 
 
@@ -128,7 +128,7 @@
 
 
 
-  <link rel="canonical" href="https://www.udnz.com/2018/10/01/通过-SSH-隧道链接远程-MySQL/"/>
+  <link rel="canonical" href="https://www.udnz.com/2018/10/08/在-Visual-Studio-Code-中使用-MINGW32-作为终端/"/>
 
 
 
@@ -138,7 +138,7 @@
   };
 </script>
 
-  <title>通过 SSH 隧道链接远程 MySQL | UDNZ</title>
+  <title>在 Visual Studio Code 中使用 MINGW32 作为终端 | UDNZ</title>
   
 
 
@@ -283,7 +283,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.udnz.com/2018/10/01/通过-SSH-隧道链接远程-MySQL/">
+    <link itemprop="mainEntityOfPage" href="https://www.udnz.com/2018/10/08/在-Visual-Studio-Code-中使用-MINGW32-作为终端/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
@@ -300,7 +300,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">通过 SSH 隧道链接远程 MySQL
+          <h1 class="post-title" itemprop="name headline">在 Visual Studio Code 中使用 MINGW32 作为终端
               
             
           </h1>
@@ -325,7 +325,7 @@
                 
               
 
-              <time title="创建时间：2018-10-01 20:18:10" itemprop="dateCreated datePublished" datetime="2018-10-01T20:18:10+08:00">2018-10-01</time>
+              <time title="创建时间：2018-10-08 17:09:18" itemprop="dateCreated datePublished" datetime="2018-10-08T17:09:18+08:00">2018-10-08</time>
             
 
             
@@ -359,15 +359,8 @@
       
 
       
-        <p>场景：</p>
-<ul>
-<li>SSH 跳板机：10.0.0.1</li>
-<li>MySQL 数据库：10.0.0.2:3306</li>
-</ul>
-<p>MySQL 部署的机器不允许 SSH 连接，并且数据库端口只允许 localhost 或 10.0.0.1 这台跳板机访问，此时本机可以通过 ssh 连上跳板机，通过 ssh 建立的隧道端口转发连接上 MySQL 数据库。</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 本机连接跳板机</span></span><br><span class="line"><span class="comment"># 打开本机 13306 端口，代理到 ssh 跳板机，并且通过跳板机访问 10.0.0.2:3306</span></span><br><span class="line">ssh -fCPN -L localhost:13306:10.0.0.2:3306 root@10.0.0.1</span><br><span class="line"><span class="comment"># 参数解释</span></span><br><span class="line"><span class="comment"># -C    使用压缩功能,是可选的,加快速度.</span></span><br><span class="line"><span class="comment"># -P    用一个非特权端口进行出去的连接.</span></span><br><span class="line"><span class="comment"># -f    一旦SSH完成认证并建立port forwarding,则转入后台运行.</span></span><br><span class="line"><span class="comment"># -N    不执行远程命令.该参数在只打开转发端口时很有用（V2版本SSH支持）</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 连接 MySQL</span></span><br><span class="line">mysql -uusername -ppassword -hlocalhost -P13306</span><br></pre></td></tr></table></figure>
-<p>参考：</p>
-<p><a href="http://mingxinglai.com/cn/2015/09/connect-mysql-via-ssh-tunnel/" target="_blank" rel="noopener">http://mingxinglai.com/cn/2015/09/connect-mysql-via-ssh-tunnel/</a></p>
+        <p>打开 Visual Studio Code 的设置，按如下配置即可：</p>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  // 找到您的 git 目录</span><br><span class="line">  <span class="string">"terminal.integrated.shell.windows"</span>: <span class="string">"C:\\Program Files (x86)\\Git\\bin\\bash.exe"</span>,</span><br><span class="line">  <span class="string">"terminal.integrated.shellArgs.windows"</span>: [<span class="string">"--login"</span>, <span class="string">"-i"</span>]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
       
     </div>
@@ -388,9 +381,7 @@
       
         <div class="post-tags">
           
-            <a href="/tags/Linux/" rel="tag"># Linux</a>
-          
-            <a href="/tags/SSH/" rel="tag"># SSH</a>
+            <a href="/tags/VSC/" rel="tag"># VSC</a>
           
         </div>
       
@@ -403,8 +394,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2018/09/30/Understanding-Architecture/" rel="next" title="Understanding Architecture">
-                <i class="fa fa-chevron-left"></i> Understanding Architecture
+              <a href="/2018/10/06/Linux-环境一键打包发布脚本/" rel="next" title="Linux 环境一键打包发布脚本">
+                <i class="fa fa-chevron-left"></i> Linux 环境一键打包发布脚本
               </a>
             
           </div>
@@ -412,10 +403,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2018/10/06/Linux-环境一键打包发布脚本/" rel="prev" title="Linux 环境一键打包发布脚本">
-                Linux 环境一键打包发布脚本 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
