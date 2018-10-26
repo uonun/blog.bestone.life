@@ -1852,7 +1852,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #1f33bd;
+  background: #ff053b;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -2833,4 +2833,17 @@ hr {
     width: auto;
     text-align: center;
   }
+}
+#footer {
+  background: url("../images/bottom-text.png") no-repeat center 40px;
+  background-color: #1a1a1a;
+  color: #aaa;
+  font-size: 0.8em;
+  line-height: 1.8em;
+  letter-spacing: 1px;
+  padding: 90px 0 40px;
+  text-align: center;
+}
+.footer-inner {
+  text-align: center;
 }

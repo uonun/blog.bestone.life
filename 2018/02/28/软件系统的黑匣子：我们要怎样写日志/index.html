@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+  
+  
+    
+    
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+  <link href="/lib/pace/pace-theme-big-counter.min.css?v=1.0.2" rel="stylesheet">
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=6.4.2" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.4.2">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.4.2">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.4.2" color="#222">
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '6.4.2',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="引言作为一个软件系统，需要写日志，这是不言而喻的，这是大家都会不假思索地说“那当然”的事。不论是什么语言，写日志的专用框架也不一而足，写到文本的，写到数据库的，写到队列的，写到Redis的等等等等。对于日志的几个级别，Trace、Debug、Warning、Error、Fault，大家也能够如数家珍。但是，有多少人能够回答下面这几个问题呢？ 为什么需要写日志？什么时候写日志？日志是写给谁看的？日志">
+<meta name="keywords" content="日志">
+<meta property="og:type" content="article">
+<meta property="og:title" content="软件系统的黑匣子：我们要怎样写日志">
+<meta property="og:url" content="https://www.udnz.com/2018/02/28/软件系统的黑匣子：我们要怎样写日志/index.html">
+<meta property="og:site_name" content="UDNZ">
+<meta property="og:description" content="引言作为一个软件系统，需要写日志，这是不言而喻的，这是大家都会不假思索地说“那当然”的事。不论是什么语言，写日志的专用框架也不一而足，写到文本的，写到数据库的，写到队列的，写到Redis的等等等等。对于日志的几个级别，Trace、Debug、Warning、Error、Fault，大家也能够如数家珍。但是，有多少人能够回答下面这几个问题呢？ 为什么需要写日志？什么时候写日志？日志是写给谁看的？日志">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://www.udnz.com/images/log-example.png">
+<meta property="og:updated_time" content="2018-02-28T07:28:22.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="软件系统的黑匣子：我们要怎样写日志">
+<meta name="twitter:description" content="引言作为一个软件系统，需要写日志，这是不言而喻的，这是大家都会不假思索地说“那当然”的事。不论是什么语言，写日志的专用框架也不一而足，写到文本的，写到数据库的，写到队列的，写到Redis的等等等等。对于日志的几个级别，Trace、Debug、Warning、Error、Fault，大家也能够如数家珍。但是，有多少人能够回答下面这几个问题呢？ 为什么需要写日志？什么时候写日志？日志是写给谁看的？日志">
+<meta name="twitter:image" content="https://www.udnz.com/images/log-example.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="UDNZ" type="application/atom+xml" />
+
+
+
+
+  <link rel="canonical" href="https://www.udnz.com/2018/02/28/软件系统的黑匣子：我们要怎样写日志/"/>
+
+
+
+<script type="text/javascript" id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>软件系统的黑匣子：我们要怎样写日志 | UDNZ</title>
+  
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style type="text/css">
+    .use-motion .motion-element,
+    .use-motion .brand,
+    .use-motion .menu-item,
+    .sidebar-inner,
+    .use-motion .post-block,
+    .use-motion .pagination,
+    .use-motion .comments,
+    .use-motion .post-header,
+    .use-motion .post-body,
+    .use-motion .collection-title { opacity: initial; }
+
+    .use-motion .logo,
+    .use-motion .site-title,
+    .use-motion .site-subtitle {
+      opacity: initial;
+      top: initial;
+    }
+
+    .use-motion {
+      .logo-line-before i { left: initial; }
+      .logo-line-after i { right: initial; }
+    }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">UDNZ</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+    <a href="/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-home"></i> <br />首页</a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+    <a href="/tags/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签<span class="badge">16</span></a>
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+    <a href="/archives/" rel="section">
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档<span class="badge">10</span></a>
+  </li>
+
+      
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />搜索</a>
+        </li>
+      
+    </ul>
+  
+
+  
+    
+
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off"
+             placeholder="搜索..." spellcheck="false"
+             type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.udnz.com/2018/02/28/软件系统的黑匣子：我们要怎样写日志/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Austin Luo">
+      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="UDNZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">软件系统的黑匣子：我们要怎样写日志
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2018-02-28 15:28:22" itemprop="dateCreated datePublished" datetime="2018-02-28T15:28:22+08:00">2018-02-28</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h1 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h1><p>作为一个软件系统，需要写日志，这是不言而喻的，这是大家都会不假思索地说“那当然”的事。不论是什么语言，写日志的专用框架也不一而足，写到文本的，写到数据库的，写到队列的，写到Redis的等等等等。对于日志的几个级别，Trace、Debug、Warning、Error、Fault，大家也能够如数家珍。但是，有多少人能够回答下面这几个问题呢？</p>
+<p>为什么需要写日志？<br>什么时候写日志？<br>日志是写给谁看的？<br>日志里都要写什么？<br>日志的组织形式应该怎样？</p>
+<p>接下来，我尝试一一地解答这些问题，说说我的理解。</p>
+<a id="more"></a>
+<h1 id="为什么需要写日志"><a href="#为什么需要写日志" class="headerlink" title="为什么需要写日志"></a>为什么需要写日志</h1><p>首先我们要树立一个观点，那就是“不是为了记录日志而记录日志，日志也不是随意记的”。要实现能够只通过日志文件还原整个程序执行的过程，达到能透明地看到程序里执行情况，每个线程每个过程到底执行到哪的目的。日志就像飞机的黑匣子一样，应当能够复原异常的整个现场乃至细节。</p>
+<p>作为程序员，我相信吐槽写注释、写文档的段子已经见得很多了。然而在我看来，写日志的重要性完全不亚于前两者，甚至在很多时候，比前两者更为重要。</p>
+<p>我们说“软件工程”，很多人只着眼了“软件”两个字，而忽视了“工程”。软件本身是为解决问题服务的，作为一项工程，我们不单要考虑软件本身的开发环节（注释、文档），还应当考虑软件的运营环节（日志）。世界上没有100%完美的事，不存在没有 bug 的软件系统，一旦软件上线，作为开发人员的我们，就不再能够接触到了，如果系统发生了异常，我们却又对系统运行的状态一无所知，那我们就完全没有办法解决问题。有时候重启一下应用，重启一下系统什么的，也能临时解决，但这只是掩耳盗铃，该来的还会再来，出现过的异常，还会在某一天再次出现。</p>
+<p>这个时候对“日志”的需求便应运而生。通过日志，记录程序在运行过程中的细节，记录发生异常时的现场，我们便能像庖丁解牛一样，对运行中的应用了如指掌了。</p>
+<h1 id="什么时候写日志"><a href="#什么时候写日志" class="headerlink" title="什么时候写日志"></a>什么时候写日志</h1><p>所谓“麻雀虽小五脏俱全”，当我们在建构一个软件系统框架时，所谓的几层结构，所谓的基础模块（通用模块、工具模块、数据访问模块……），包括写日志的模块，这些方法都是不用思考，放之四海而皆准的东西，直接搭建/拼凑起来再说。</p>
+<p>然后呢？我想很多人就开始闷头做功能了——我是指只写功能代码，完成实际的业务逻辑。在做业务功能的时候，由于现代IDE的调试功能很强大，可以一行一行调试，看到运行状态、变量状态等等，所以此时对日志的需求和功用是极度不敏感，觉得此时可有可无。但是一旦业务功能做完了，基于各种各样的理由，工期紧啊，已经完成功能了啊，就直接转测不再继续完善了。其结果是，功能的确完成了，但是搭建的日志模块却几乎没有使用。完成了整个系统，只有不痛不痒的两三行日志，大多都是在搭建框架时写的“应用启动了”，“应用停止了”一类。后面就不用说了，都说回头补设计文档，有多少人补了？都说回头补注释，有多少人补了？既然已经转测了，既然已经上线了，就更不会再回头去写日志了。</p>
+<p>后来，可想而知，当生产环境除了问题，由于没有日志，到底出了什么异常，就两眼一抹黑，没人能知道了。终于，临时解决了问题，意识到日志的重要性之后，急急回头翻出代码来写日志，可是当时做业务的逻辑、思考、陷阱、注意事项等等，都忘记的差不多了，写日志也就只能像看陌生代码一样，看表面，“进入了XXX方法”，“插入数据库完成”，只能写这样的日志了。而在我看来，这样的日志是不够的，这也是我最反感的写日志的方式，完全是为了写而写——也是不足以还原故障现场的，这个后续再说。</p>
+<p>说到此可能你应该也看出来的，什么时候写日志是最佳时机呢？那就是在开发功能代码时。可以说，日志本身也是属于功能代码的一部分，只不过业务功能是给最终客户的，而日志是给运维、开发等用的。此时写日志有一个巨大的好处，那就是因为你是一边在思考，一边在开发，那么此时业务流转、可能的异常都会考虑得很完善，写日志的过程，也是反复思考和校验逻辑的过程，也就自然而然地会在日志中体现更多的关键信息。</p>
+<h1 id="日志是写给谁看的"><a href="#日志是写给谁看的" class="headerlink" title="日志是写给谁看的"></a>日志是写给谁看的</h1><ul>
+<li>当然是给运维了啊，运维能够第一时间看到，比如日志中写端口被占用，马上改个端口就可以了！</li>
+<li>当然是给开发了啊，每次系统发生了异常，运维人员不是直接把日志给开发人员一丢就了事了吗？</li>
+</ul>
+<p>在我看来，不论是运维，还是开发，再广泛地讲，包括白盒测试，都是需要看日志的。日志对不同的人，都有不同的使用价值。运维通过日志了解到程序基本的安装、环境依赖、加载情况、运行态信息等等；开发通过日志还可以了解到程序对业务处理的信息，每个业务的流程、环节、现场状态等等；白盒测试也可以通过日志了解到程序要求的非功能特性等等。</p>
+<h1 id="日志里都要写什么"><a href="#日志里都要写什么" class="headerlink" title="日志里都要写什么"></a>日志里都要写什么</h1><p>明确了“为什么要写日志”和“日志写给谁看的”了之后，要回答“日志里都要写什么”就容易得多了。我们需要从多个侧面来想这个问题。</p>
+<h2 id="考虑使用者"><a href="#考虑使用者" class="headerlink" title="考虑使用者"></a>考虑使用者</h2><p>正如前文说，日志可能面向运维、面向开发等等不同身份的人群。因此日志的内容上，就要为不同的人写入其关切的入不同内容。</p>
+<h2 id="考虑业务"><a href="#考虑业务" class="headerlink" title="考虑业务"></a>考虑业务</h2><p>这里的“业务”可能不一定是最终用户的业务，也可能是中间态的业务逻辑。当业务处理出现问题时，到底是程序的bug造成，还是错误的数据造成，或者是硬件、网络等资源的问题造成，这些都应当能够从日志中分析得出来。</p>
+<p>一段日志，应当能够对故障现场的每一个细节都能在大脑思维里复盘。同时，日志不单单像流水账一样记录程序的运行过程，每行日志还不应该是孤立的，还应当是一个有机的整体，是有上下文的，有头有尾的。比如下面这一段日志：</p>
+<p><img src="/images/log-example.png" alt="log-example"></p>
+<p>日志中记录了一些关键事件以及一些关键信息。比如什么时候侦测到了新消息，有几个Handler可以去处理，每个Handler对应了哪个线程，每个线程对应在处理那种消息；有了某个处理过程的开始，就应当有对应的结束，如果涉及到多线程，还应当能够区分两行同样的日志，对应的不同线程和不同业务单据等等。而不仅仅是“侦测到消息”，“开始处理”，“处理完毕”这种简单的记录。</p>
+<h2 id="考虑运营"><a href="#考虑运营" class="headerlink" title="考虑运营"></a>考虑运营</h2><p>对于业务，一般我们需要后续的分析和运营，日志在这方面也有起到较大作用，因此这部分日志应当考虑以结构化、规范化的方式来记录，从而方便后续对日志进行自动化分析。</p>
+<h2 id="考虑生命周期"><a href="#考虑生命周期" class="headerlink" title="考虑生命周期"></a>考虑生命周期</h2><p>那么日志是越详细越好，记录得越多越好吗？是。也不是。</p>
+<p>每一个软件系统都是有一定的生命周期的。刚测试上线的软件，一般最不稳定，最容易出现各种这样那样的问题，此时日志应当详细些。而长期运行了很久的软件，经过了时间、业务的大量考验，该出现的bug也已经修复得差不多了，几乎不会再出现什么问题，日志应当少一些。</p>
+<p>怎么实现呢？很显然我们不能通过改代码，去掉写日志的代码之后重新发布来做这件事。常规地，我们通过日志分级来应对这个问题。通过不同的日志分级，以及日志输出开关，实时地调整日志输出的细节程度。因此，在我们编写输出日志的代码时，就务必要注意即将输出的日志应当是什么级别。Trace、Debug、Warning、Error、Fault，这些级别，应当对应不同重要程度、不同使用场景的细节。</p>
+<p>考虑了以上三个方面，在开发完成之后，我们还应当切换不同的身份、角度以及配置不同的日志输出级别，来“设身处地”地审视输出的日志文件，是否能够满足要求，这样才能写一份好的日志记录。</p>
+<h1 id="日志的组织形式应该怎样"><a href="#日志的组织形式应该怎样" class="headerlink" title="日志的组织形式应该怎样"></a>日志的组织形式应该怎样</h1><p>既然叫“日志”，那我们通常的组织形式变是以时间为顺序来组织的一系列文件。除此之外，还可以将日志写入数据库、外部分析系统等等。</p>
+<p>考虑“Separation of Concerns”，日志的组织形式，也可以根据上文考虑的不同方面来组织，比如将Error及以上的日志冗余独立记录，将面向运维的启停、加载信息独立记录，将软件运行日志和业务处理日志分开记录等等。关键是“Concern”，编写记录日志的代码时，我们应该对这段代码的功能、重要性、在整个系统的角色有深刻的认知，从而才能以不同的“关切”来考虑日志应该怎么输出，怎么组织。</p>
+<h1 id="综上"><a href="#综上" class="headerlink" title="综上"></a>综上</h1><p>当然，根据软件系统的不同，其日志的侧重点也可能不同。但总体来说，日志就如同飞机的黑匣子一样重要，我们应当重视日志输出的编写工作，而绝非仅仅是完成核心业务代码的编写。</p>
+
+      
+    </div>
+
+    
+      
+
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/日志/" rel="tag"># 日志</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/11/15/创建-VS-2017-的离线安装包/" rel="next" title="创建 VS 2017 的离线安装包">
+                <i class="fa fa-chevron-left"></i> 创建 VS 2017 的离线安装包
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2018/06/15/记一次-NET-Framework-不兼容-HTTP-COOKIE-协议标准的问题跟踪/" rel="prev" title="记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪">
+                记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image"
+                src="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4"
+                alt="Austin Luo" />
+            
+              <p class="site-author-name" itemprop="name">Austin Luo</p>
+              <p class="site-description motion-element" itemprop="description">架构师，腾讯，专注微服务平台建设</p>
+          </div>
+
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">10</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">16</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  <a href="https://github.com/uonun" target="_blank" title="GitHub" rel="external nofollow"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="https://bitbucket.org/uonun/" target="_blank" title="Bitbucket" rel="external nofollow"><i class="fa fa-fw fa-bitbucket"></i>Bitbucket</a>
+                  
+                </span>
+              
+                <span class="links-of-author-item">
+                  <a href="//shang.qq.com/wpa/qunwpa?idkey=2aa3ef00102d1db4f2275d835aabf3eb043e8ba7b22ead791ba469cdb198a8cc" target="_blank" title="QQ 群" rel="external nofollow"><i class="fa fa-fw fa-qq"></i>QQ 群</a>
+                  
+                </span>
+              
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#为什么需要写日志"><span class="nav-number">2.</span> <span class="nav-text">为什么需要写日志</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#什么时候写日志"><span class="nav-number">3.</span> <span class="nav-text">什么时候写日志</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#日志是写给谁看的"><span class="nav-number">4.</span> <span class="nav-text">日志是写给谁看的</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#日志里都要写什么"><span class="nav-number">5.</span> <span class="nav-text">日志里都要写什么</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#考虑使用者"><span class="nav-number">5.1.</span> <span class="nav-text">考虑使用者</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#考虑业务"><span class="nav-number">5.2.</span> <span class="nav-text">考虑业务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#考虑运营"><span class="nav-number">5.3.</span> <span class="nav-text">考虑运营</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#考虑生命周期"><span class="nav-number">5.4.</span> <span class="nav-text">考虑生命周期</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#日志的组织形式应该怎样"><span class="nav-number">6.</span> <span class="nav-text">日志的组织形式应该怎样</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#综上"><span class="nav-number">7.</span> <span class="nav-text">综上</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div id="bottom">
+    健康的心态，火热的激情，精益求精的工作态度加一颗热诚的心，创建似锦前程！
+</div>
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2015 – <span itemprop="copyrightYear">2018</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-cloud"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">udnz.com</span>
+
+  
+
+  
+</div>
+
+
+  
+
+
+
+
+
+
+
+
+
+  <div class="footer-custom"> - 思考 / 一丝不苟 / 精益求精 / 永不满足 / 怀疑一切 / 认知未来 - </div>
+
+
+        
+
+
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//tajs.qq.com/stats?sId=16184686";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+        
+      </div>
+    </footer>    
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+	
+    
+
+    
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=6.4.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=6.4.2"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=6.4.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=6.4.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=6.4.2"></script>
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('10');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  <style>
+    .copy-btn {
+      display: inline-block;
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 20px;
+      color: #333;
+      white-space: nowrap;
+      vertical-align: middle;
+      cursor: pointer;
+      background-color: #eee;
+      background-image: linear-gradient(#fcfcfc, #eee);
+      border: 1px solid #d5d5d5;
+      border-radius: 3px;
+      user-select: none;
+      outline: 0;
+    }
+
+    .highlight-wrap .copy-btn {
+      transition: opacity .3s ease-in-out;
+      opacity: 0;
+      padding: 2px 6px;
+      position: absolute;
+      right: 4px;
+      top: 8px;
+    }
+
+    .highlight-wrap:hover .copy-btn,
+    .highlight-wrap .copy-btn:focus {
+      opacity: 1
+    }
+
+    .highlight-wrap {
+      position: relative;
+    }
+  </style>
+  <script>
+    $('.highlight').each(function (i, e) {
+      var $wrap = $('<div>').addClass('highlight-wrap')
+      $(e).after($wrap)
+      $wrap.append($('<button>').addClass('copy-btn').append('复制').on('click', function (e) {
+        var code = $(this).parent().find('.code').find('.line').map(function (i, e) {
+          return $(e).text()
+        }).toArray().join('\n')
+        var ta = document.createElement('textarea')
+        document.body.appendChild(ta)
+        ta.style.position = 'absolute'
+        ta.style.top = '0px'
+        ta.style.left = '0px'
+        ta.value = code
+        ta.select()
+        ta.focus()
+        var result = document.execCommand('copy')
+        document.body.removeChild(ta)
+        
+          if(result)$(this).text('复制成功')
+          else $(this).text('复制失败')
+        
+        $(this).blur()
+      })).on('mouseleave', function (e) {
+        var $b = $(this).find('.copy-btn')
+        setTimeout(function () {
+          $b.text('复制')
+        }, 300)
+      }).append(e)
+    })
+  </script>
+
+
+</body>
+</html>
