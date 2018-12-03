@@ -1852,7 +1852,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #e2a29d;
+  background: #a6fcf2;
 }
 .links-of-blogroll {
   font-size: 13px;
@@ -2892,7 +2892,7 @@ hr {
   content: "\00A7";
   font-size: 1.1em;
   display: block;
-  color: #1d4b8f;
+  color: #ba3925;
 }
 .post-body h1:hover > a.headerlink,
 .post-body h2:hover > a.headerlink,
@@ -2901,6 +2901,16 @@ hr {
 .post-body h5:hover > a.headerlink,
 .post-body h6:hover > a.headerlink {
   visibility: visible;
+}
+.post-body h1 > code,
+.post-body h2 > code,
+.post-body h3 > code,
+.post-body h4 > code,
+.post-body h5 > code,
+.post-body h6 > code {
+  color: #ba3925;
+  background: #ffe0db;
+  font-size: inherit;
 }
 .post-title {
   color: #3e3e3e;
@@ -2922,7 +2932,6 @@ blockquote {
   padding: 5px 15px;
   border-left: 4px solid #cecece;
   background-color: #fafafa;
-  font-weight: lighter;
   margin-bottom: 1em;
 }
 .post-body > blockquote::before {
@@ -2931,21 +2940,23 @@ blockquote {
   font-size: 2.5em;
   font-weight: bold;
   line-height: 0.6em;
-  margin-left: -0.5em;
+  margin-left: -0.25em;
   color: #929292;
   text-shadow: 0 1px 2px rgba(0,0,0,0.1);
-  font-family: monospace;
+  font-family: "Noto Serif", "DejaVu Serif", serif;
   font-style: normal;
 }
 blockquote p {
   margin-bottom: 0;
 }
-a[rel=noopener] {
-  color: #1d4b8f;
-  vertical-align: super;
-  font-size: 0.3em;
-  border-bottom: 0;
-  font-weight: normal;
+.post-body a {
+  color: #167300;
+}
+a:hover,
+span.exturl:hover,
+a:active,
+span.exturl:active {
+  border-bottom-color: #167300;
 }
 .post-button a {
   border-bottom-color: #167300;

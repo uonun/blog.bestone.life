@@ -115,17 +115,17 @@
 
 
 
-  <meta name="description" content="架构师，腾讯，专注微服务平台建设">
+  <meta name="description" content="架构师，腾讯专注微服务和软件基础设施建设">
 <meta name="keywords" content=".net, architecture, architect, micro-service, soa, istio, k8s, kubernetes, dotnet, .net core, c#">
 <meta property="og:type" content="website">
 <meta property="og:title" content="UDNZ">
 <meta property="og:url" content="https://www.udnz.com/index.html">
 <meta property="og:site_name" content="UDNZ">
-<meta property="og:description" content="架构师，腾讯，专注微服务平台建设">
+<meta property="og:description" content="架构师，腾讯专注微服务和软件基础设施建设">
 <meta property="og:locale" content="zh-CN">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="UDNZ">
-<meta name="twitter:description" content="架构师，腾讯，专注微服务平台建设">
+<meta name="twitter:description" content="架构师，腾讯专注微服务和软件基础设施建设">
 
 
 
@@ -329,11 +329,11 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.udnz.com/2018/10/27/Go-语言实践：编写可维护的程序的建议【译】/">
+    <link itemprop="mainEntityOfPage" href="https://www.udnz.com/2018/10/27/【译】Go-语言实践：编写可维护的程序的建议/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
     </span>
 
@@ -348,8 +348,8 @@
         
           <h2 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2018/10/27/Go-语言实践：编写可维护的程序的建议【译】/" itemprop="url">
-                  Go 语言实践：编写可维护的程序的建议【译】
+                <a class="post-title-link" href="/2018/10/27/【译】Go-语言实践：编写可维护的程序的建议/" itemprop="url">
+                  【译】Go 语言实践：编写可维护的程序的建议
                 </a>
               
             
@@ -378,6 +378,22 @@
               <time title="创建时间：2018-10-27 23:08:18" itemprop="dateCreated datePublished" datetime="2018-10-27T23:08:18+08:00">2018-10-27</time>
             
 
+            
+              
+
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2018-11-25 18:01:18" itemprop="dateModified" datetime="2018-11-25T18:01:18+08:00">2018-11-25</time>
+              
             
           </span>
 
@@ -411,35 +427,70 @@
       
         
           <p><strong>译者注</strong></p>
-<p>本文为 <strong>QCon 2018 上海站</strong>主题演讲嘉宾、Heptio 资深工程师、著名Go语言专家 <a href="https://2018.qconshanghai.com/speaker/2503" target="_blank" rel="noopener">David Cheney</a> 关于 Go 语言实践的英文分享。为方便大家阅读，在此由 <a href="https://www.udnz.com">Austin Luo</a> 翻译为中文。翻译水平有限，如有偏颇之处，烦请联系我更正之。</p>
-<p>转载请注明出处，保留本节译者注。</p>
+<p>本文为 <strong>QCon 2018 上海站</strong>主题演讲嘉宾、Heptio 资深工程师、著名 Go 语言专家 <a href="https://2018.qconshanghai.com/speaker/2503" target="_blank" rel="noopener">David Cheney</a> 关于 Go 语言实践的英文分享。为方便大家阅读，在此由 <a href="https://www.udnz.com">Austin Luo</a> 翻译为中文，在文中难以理解之处，也特别增加了译者的理解说明。翻译水平有限，如有偏颇之处，烦请联系我（<a href="mailto:uonun@163.com" target="_blank" rel="noopener">uonun@163.com</a>）更正。转载请注明出处，保留本节译者注。</p>
 <hr>
-<p><strong>引言</strong></p>
-<p>接下来这两场我将给大家一些编写 Go 代码的最佳实践。</p>
-<p>今天这是一个研讨会风格的演讲，我会摒弃那些绚丽的 PPT，而是直接使用你们可以直接带走的文档。</p>
-<blockquote>
-<p>TIP: 你可以在这里找到这个演讲最新的在线版本：<br><a href="https://dave.cheney.net/practical-go/presentations/qcon-china.html" target="_blank" rel="noopener">https://dave.cheney.net/practical-go/presentations/qcon-china.html</a></p>
-</blockquote>
-<h1 id="指导原则"><a href="#指导原则" class="headerlink" title="指导原则"></a>指导原则</h1><p>我们要谈论在一个编程语言中的最佳实践，那么我们首先应该明确什么是“最佳”。如果你们听了我昨天那场讲演的话，你一定看到了来自 Go 团队的 Russ Cox 讲的一句话：</p>
-<blockquote>
-<p>软件工程，是当你在编程时增加了工期和其他编程人员之后发生的事。 — Russ Cox</p>
-</blockquote>
-<p>Russ 是在阐述软件“编程”和软件“工程”之间的区别，前者是你写的程序，而后者是一个让更多的人长期使用的产品。软件工程师会来来去去地更换，团队也会成长或者萎缩，需求也会发生变化，新的特性也会增加，bug 也会被修复，这就是软件“工程”的本质。</p>
-<p>我可能是现场最早的 Go 语言用户，但与其说我的主张来自我的资历，不如说我今天讲的是真实来自于 Go 语言本身的指导原则，那就是：</p>
-<ol>
+<p><strong>目录</strong></p>
+<ul>
+<li>指导原则<ul>
 <li>简单性</li>
 <li>可读性</li>
 <li>生产率</li>
-</ol>
+</ul>
+</li>
+<li>标识符<ul>
+<li>选择清晰的名称，而不是简洁的名称</li>
+<li>标识符长度</li>
+<li>命名中不要包含所属类型的名称</li>
+<li>使用一致的命名风格</li>
+<li>使用一致的声明风格</li>
+<li>成为团队合作者</li>
+</ul>
+</li>
+<li>代码注释<ul>
+<li>变量和常量上的注释应当描述它的内容，而非目的</li>
+<li>总是为公开符号写文档说明</li>
+</ul>
+</li>
+<li>包的设计<ul>
+<li>一个好的包从它的名称开始</li>
+<li>避免将包命名为 base、common、util</li>
+<li>快速返回，而不是深层嵌套</li>
+<li>让零值变得有意义</li>
+<li>避免包级别的状态</li>
+</ul>
+</li>
+<li>项目结构<ul>
+<li>考虑更少，更大的包</li>
+<li>确保 main 包越小越好</li>
+</ul>
+</li>
+<li>API 设计<ul>
+<li>设计难以被误用的 API</li>
+<li>针对默认用例设计 API</li>
+<li>让函数自身定义它所需的行为</li>
+</ul>
+</li>
+<li>错误处理<ul>
+<li>通过消除错误来消除错误处理</li>
+<li>错误只处理一次</li>
+</ul>
+</li>
+<li>并发<ul>
+<li>保持自己忙碌，否则自己做</li>
+<li>将并发留给调用者</li>
+<li>不要启动一个永不停止的协程</li>
+</ul>
+</li>
+</ul>
+<p><strong>引言</strong></p>
+<p>接下来这两场我将给大家一些编写 Go 代码的最佳实践。</p>
+<p>今天这是一个研讨会风格的演讲，我会摒弃那些绚丽的 PPT，而是使用您们可以直接带走的文档。</p>
 <blockquote>
-<p>你可能已经注意到，我并没有提<strong>性能</strong>或者<strong>并发性</strong>。实际上有不少的语言执行效率比 Go 还要高，但它们一定没有 Go 这么简单。有些语言也以<strong>并发性</strong>为最高目标，但它们的可读性和生产率都不好。</p>
-</blockquote>
-<blockquote>
-<p><strong>性能</strong>和<strong>并发性</strong>都很重要，但它们不如<strong>简单性</strong>、<strong>可读性</strong>和<strong>生产率</strong>那么重要。</p>
+<p>您可以在这里找到这个演讲最新的在线版本：<br><a href="https://dave.cheney.net/practical-go/presentations/qcon-china.html" target="_blank" rel="noopener">https://dave.cheney.net/practical-go/presentations/qcon-china.html</a></p>
 </blockquote>
           <!--noindex-->
           <div class="post-button text-center">
-            <a class="btn" href="/2018/10/27/Go-语言实践：编写可维护的程序的建议【译】/#more" rel="contents">
+            <a class="btn" href="/2018/10/27/【译】Go-语言实践：编写可维护的程序的建议/#more" rel="contents">
               阅读全文 &raquo;
             </a>
           </div>
@@ -499,7 +550,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
     </span>
 
@@ -640,7 +691,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
     </span>
 
@@ -780,7 +831,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
     </span>
 
@@ -925,7 +976,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
     </span>
 
@@ -1074,7 +1125,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
     </span>
 
@@ -1255,7 +1306,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
     </span>
 
@@ -1398,7 +1449,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
     </span>
 
@@ -1540,7 +1591,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
     </span>
 
@@ -1688,7 +1739,7 @@
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯，专注微服务平台建设">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
       <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
     </span>
 
@@ -1852,7 +1903,7 @@
                 alt="Austin Luo" />
             
               <p class="site-author-name" itemprop="name">Austin Luo</p>
-              <p class="site-description motion-element" itemprop="description">架构师，腾讯，专注微服务平台建设</p>
+              <p class="site-description motion-element" itemprop="description">架构师，腾讯<br />专注微服务和软件基础设施建设</p>
           </div>
 
           
