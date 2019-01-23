@@ -115,18 +115,18 @@
 
 
 
-  <meta name="description" content="初中时，在电视里看office学习节目，对电脑无比神往。高二时，第一次开电脑上机课，两个人一台机学开机关机等基本操作，激动得大腿肌肉颤抖，在凳子上坐不住，坐两分钟蹲几分钟马步，实在会发抖，过了十几分钟才坐的住。这就是快感。 大学时，左边放着个水杯，码一阵代码后开启调试的间歇喝一口水，结果杯里的水喝完了，举着空杯喝一口空气。杯子放下继续码代码，直到第二次…第N次举着空水杯喝空气之后，仍然没有去把杯子">
-<meta name="keywords" content="杂谈">
+  <meta name="description" content="在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令开发时时而在 MAC、Linux 上，时而在 Windows 上，脚本执行环境无法统一是个大问题。所幸我们使用的 Git 中带有 MINGW32（或安装 CYGWIN），这里面已经有很多的非 Windows 平台命令了。 但是在使用过程中，还是有一些命令是缺失的，比如 zip，此时我们可以自行下载他们（下载地址），下载之后">
+<meta name="keywords" content=".net, architecture, architect, micro-service, soa, istio, k8s, kubernetes, dotnet, .net core, c#">
 <meta property="og:type" content="article">
-<meta property="og:title" content="什么是写程序的快感？">
-<meta property="og:url" content="https://www.udnz.com/2017/04/21/什么是写程序的快感？/index.html">
+<meta property="og:title" content="Using portable commands like zip&#x2F;tar on Windows">
+<meta property="og:url" content="https://www.udnz.com/2019/01/23/Using-portable-commands-like-zip-tar-on-Windows/index.html">
 <meta property="og:site_name" content="UDNZ">
-<meta property="og:description" content="初中时，在电视里看office学习节目，对电脑无比神往。高二时，第一次开电脑上机课，两个人一台机学开机关机等基本操作，激动得大腿肌肉颤抖，在凳子上坐不住，坐两分钟蹲几分钟马步，实在会发抖，过了十几分钟才坐的住。这就是快感。 大学时，左边放着个水杯，码一阵代码后开启调试的间歇喝一口水，结果杯里的水喝完了，举着空杯喝一口空气。杯子放下继续码代码，直到第二次…第N次举着空水杯喝空气之后，仍然没有去把杯子">
+<meta property="og:description" content="在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令开发时时而在 MAC、Linux 上，时而在 Windows 上，脚本执行环境无法统一是个大问题。所幸我们使用的 Git 中带有 MINGW32（或安装 CYGWIN），这里面已经有很多的非 Windows 平台命令了。 但是在使用过程中，还是有一些命令是缺失的，比如 zip，此时我们可以自行下载他们（下载地址），下载之后">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2017-04-21T05:25:28.000Z">
+<meta property="og:updated_time" content="2019-01-23T11:39:55.000Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="什么是写程序的快感？">
-<meta name="twitter:description" content="初中时，在电视里看office学习节目，对电脑无比神往。高二时，第一次开电脑上机课，两个人一台机学开机关机等基本操作，激动得大腿肌肉颤抖，在凳子上坐不住，坐两分钟蹲几分钟马步，实在会发抖，过了十几分钟才坐的住。这就是快感。 大学时，左边放着个水杯，码一阵代码后开启调试的间歇喝一口水，结果杯里的水喝完了，举着空杯喝一口空气。杯子放下继续码代码，直到第二次…第N次举着空水杯喝空气之后，仍然没有去把杯子">
+<meta name="twitter:title" content="Using portable commands like zip&#x2F;tar on Windows">
+<meta name="twitter:description" content="在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令开发时时而在 MAC、Linux 上，时而在 Windows 上，脚本执行环境无法统一是个大问题。所幸我们使用的 Git 中带有 MINGW32（或安装 CYGWIN），这里面已经有很多的非 Windows 平台命令了。 但是在使用过程中，还是有一些命令是缺失的，比如 zip，此时我们可以自行下载他们（下载地址），下载之后">
 
 
 
@@ -135,7 +135,7 @@
 
 
 
-  <link rel="canonical" href="https://www.udnz.com/2017/04/21/什么是写程序的快感？/"/>
+  <link rel="canonical" href="https://www.udnz.com/2019/01/23/Using-portable-commands-like-zip-tar-on-Windows/"/>
 
 
 
@@ -145,7 +145,7 @@
   };
 </script>
 
-  <title>什么是写程序的快感？ | UDNZ</title>
+  <title>Using portable commands like zip/tar on Windows | UDNZ</title>
   
 
 
@@ -329,7 +329,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.udnz.com/2017/04/21/什么是写程序的快感？/">
+    <link itemprop="mainEntityOfPage" href="https://www.udnz.com/2019/01/23/Using-portable-commands-like-zip-tar-on-Windows/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="Austin Luo">
@@ -346,7 +346,7 @@
 
         
         
-          <h2 class="post-title" itemprop="name headline">什么是写程序的快感？
+          <h2 class="post-title" itemprop="name headline">Using portable commands like zip/tar on Windows
               
             
           </h2>
@@ -371,7 +371,7 @@
                 
               
 
-              <time title="创建时间：2017-04-21 13:25:28" itemprop="dateCreated datePublished" datetime="2017-04-21T13:25:28+08:00">2017-04-21</time>
+              <time title="创建时间：2019-01-23 19:39:55" itemprop="dateCreated datePublished" datetime="2019-01-23T19:39:55+08:00">2019-01-23</time>
             
 
             
@@ -405,15 +405,12 @@
       
 
       
-        <p>初中时，在电视里看office学习节目，对电脑无比神往。高二时，第一次开电脑上机课，两个人一台机学开机关机等基本操作，激动得大腿肌肉颤抖，在凳子上坐不住，坐两分钟蹲几分钟马步，实在会发抖，过了十几分钟才坐的住。这就是快感。</p>
-<p>大学时，左边放着个水杯，码一阵代码后开启调试的间歇喝一口水，结果杯里的水喝完了，举着空杯喝一口空气。杯子放下继续码代码，直到第二次…第N次举着空水杯喝空气之后，仍然没有去把杯子续上，然而续水很远吗？不，水壶就在右手边。这就是快感。</p>
-<p>临毕业，自己写一个博客程序，生生推倒重写3次，每一次都是质变。期间一个结构设计问题思考酝酿了很久，最终是半夜做梦突然来了灵感醒来，兴奋的再也睡不着了，马上一个激灵起来实现。整个博客程序完成之后无意看到了head first设计模式，各种我操我操的感叹，尼玛怎么跟我想的一样？这就是快感。</p>
-<a id="more"></a>
-<p>毕业后，特别是做自己的练手项目，无论白天黑夜，总跟自己说，这个问题5分钟就能解决，然而第N个5分钟过去了，需求已经早扩大得无边无际了，还在继续，直到天亮仍然放不下。这就是快感。</p>
-<p>这个清明节，做了两个 visual studio 插件，三天假两天都是凌晨5点睡觉的。刚刚才收到无警告报告（手上的项目每几个小时会上报运营报告，凌晨2点是个check point），一抬头，天就亮了。这就是快感。</p>
-<p>非计算机专业，纯自学一路走来，唯有这快感激励我走到今天，提供我码每一行代码的动力。这么多年来，很多朋友、同事接私单业余做也收益可观，但我只做过两个帮忙性质的单子，是的，十年只两个。摸着良心说，挣钱还真不是我码代码的第一原因——虽然做过的小产品已经很多了，但从来都没有转化为经济。我还买不起房，并不是来体验生活的富二代。</p>
-<p>这种示例还很多…五指朝上地说，没有半句虚言。</p>
-<p>快感，就是着了魔。</p>
+        <h1 id="在-Windows-上使用-Mac-Linux-上的-zip-tar-等命令"><a href="#在-Windows-上使用-Mac-Linux-上的-zip-tar-等命令" class="headerlink" title="在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令"></a>在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令</h1><p>开发时时而在 MAC、Linux 上，时而在 Windows 上，脚本执行环境无法统一是个大问题。所幸我们使用的 Git 中带有 MINGW32（或安装 CYGWIN），这里面已经有很多的非 Windows 平台命令了。</p>
+<p>但是在使用过程中，还是有一些命令是缺失的，比如 <code>zip</code>，此时我们可以自行下载他们（<a href="https://sourceforge.net/projects/gnuwin32/files/" target="_blank" rel="noopener">下载地址</a>），下载之后，将可执行的 exe 文件和相关依赖文件，放到 MING32/CYGWIN 的 bin 目录中即可。</p>
+<p>附：</p>
+<ul>
+<li>Git 的 MINGW32 默认安装目录：C:\Program Files (x86)\Git\mingw32\bin</li>
+</ul>
 
       
     </div>
@@ -436,12 +433,6 @@
 
     <footer class="post-footer">
       
-        <div class="post-tags">
-          
-            <a href="/tags/杂谈/" rel="tag"># 杂谈</a>
-          
-        </div>
-      
 
       
       
@@ -451,8 +442,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2017/03/23/后端视角的高性能、高可用设计概要/" rel="next" title="后端视角的高性能、高可用设计概要">
-                <i class="fa fa-chevron-left"></i> 后端视角的高性能、高可用设计概要
+              <a href="/2018/10/27/【译】Go-语言实践：编写可维护的程序的建议/" rel="next" title="【译】Go 语言实践：编写可维护的程序的建议">
+                <i class="fa fa-chevron-left"></i> 【译】Go 语言实践：编写可维护的程序的建议
               </a>
             
           </div>
@@ -460,10 +451,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2017/11/15/创建-VS-2017-的离线安装包/" rel="prev" title="创建 VS 2017 的离线安装包">
-                创建 VS 2017 的离线安装包 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -508,8 +495,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -629,6 +625,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#在-Windows-上使用-Mac-Linux-上的-zip-tar-等命令"><span class="nav-number">1.</span> <span class="nav-text">在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       

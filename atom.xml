@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://www.udnz.com/"/>
-  <updated>2018-11-25T10:01:18.000Z</updated>
+  <updated>2019-01-23T11:39:55.000Z</updated>
   <id>https://www.udnz.com/</id>
   
   <author>
@@ -15,6 +15,27 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Using portable commands like zip/tar on Windows</title>
+    <link href="https://www.udnz.com/2019/01/23/Using-portable-commands-like-zip-tar-on-Windows/"/>
+    <id>https://www.udnz.com/2019/01/23/Using-portable-commands-like-zip-tar-on-Windows/</id>
+    <published>2019-01-23T11:39:55.000Z</published>
+    <updated>2019-01-23T11:39:55.000Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="在-Windows-上使用-Mac-Linux-上的-zip-tar-等命令"><a href="#在-Windows-上使用-Mac-Linux-上的-zip-tar-等命令" class="headerlink" title="在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令"></a>在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令</h1><p>开发时时而在 MAC、Linux 上，时而在 Windows 上，脚本执行环境无法统一是个大问题。所幸我们使用的 Git 中带有 MINGW32（或安装 CYGWIN），这里面已经有很多的非 Windows 平台命令了。</p><p>但是在使用过程中，还是有一些命令是缺失的，比如 <code>zip</code>，此时我们可以自行下载他们（<a href="https://sourceforge.net/projects/gnuwin32/files/" target="_blank" rel="noopener">下载地址</a>），下载之后，将可执行的 exe 文件和相关依赖文件，放到 MING32/CYGWIN 的 bin 目录中即可。</p><p>附：</p><ul><li>Git 的 MINGW32 默认安装目录：C:\Program Files (x86)\Git\mingw32\bin</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;在-Windows-上使用-Mac-Linux-上的-zip-tar-等命令&quot;&gt;&lt;a href=&quot;#在-Windows-上使用-Mac-Linux-上的-zip-tar-等命令&quot; class=&quot;headerlink&quot; title=&quot;在 Windows 上使用 Ma
+      
+    
+    </summary>
+    
+    
+  </entry>
   
   <entry>
     <title>【译】Go 语言实践：编写可维护的程序的建议</title>
