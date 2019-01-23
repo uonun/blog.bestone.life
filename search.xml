@@ -4,6 +4,10 @@
     <title><![CDATA[Using portable commands like zip/tar on Windows]]></title>
     <url>%2F2019%2F01%2F23%2FUsing-portable-commands-like-zip-tar-on-Windows%2F</url>
     <content type="text"><![CDATA[在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令开发时时而在 MAC、Linux 上，时而在 Windows 上，脚本执行环境无法统一是个大问题。所幸我们使用的 Git 中带有 MINGW32（或安装 CYGWIN），这里面已经有很多的非 Windows 平台命令了。 但是在使用过程中，还是有一些命令是缺失的，比如 zip，此时我们可以自行下载他们（下载地址），下载之后，将可执行的 exe 文件和相关依赖文件，放到 MING32/CYGWIN 的 bin 目录中即可。 附： Git 的 MINGW32 默认安装目录：C:\Program Files (x86)\Git\mingw32\bin]]></content>
+      <tags>
+        <tag>Linux</tag>
+        <tag>Mac</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[将代码从 SVN 迁移到 GIT 并保留提交记录]]></title>
