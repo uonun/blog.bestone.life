@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://www.udnz.com/2019/01/25/Protobuf-gRPC-gRPC-Gateway/</loc>
+    
+    <lastmod>2019-01-25T07:03:01.000Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>https://www.udnz.com/2019/01/23/Using-portable-commands-like-zip-tar-on-Windows/</loc>
     
     <lastmod>2019-01-23T11:39:55.000Z</lastmod>
@@ -51,14 +58,14 @@
   </url>
   
   <url>
-    <loc>https://www.udnz.com/categories/index.html</loc>
+    <loc>https://www.udnz.com/tags/index.html</loc>
     
     <lastmod>2018-09-30T09:34:24.409Z</lastmod>
     
   </url>
   
   <url>
-    <loc>https://www.udnz.com/tags/index.html</loc>
+    <loc>https://www.udnz.com/categories/index.html</loc>
     
     <lastmod>2018-09-30T09:34:24.409Z</lastmod>
     
