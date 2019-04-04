@@ -237,7 +237,7 @@
           
           <li class="menu-item menu-item-tags">
     <a href="/tags/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签<span class="badge">22</span></a>
+      <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />标签<span class="badge">25</span></a>
   </li>
         
         
@@ -245,7 +245,7 @@
           
           <li class="menu-item menu-item-archives">
     <a href="/archives/" rel="section">
-      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档<span class="badge">14</span></a>
+      <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />归档<span class="badge">15</span></a>
   </li>
 
       
@@ -311,6 +311,458 @@
           <div id="content" class="content">
             
   <section id="posts" class="posts-expand">
+    
+      
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://www.udnz.com/2019/03/14/员工班车超低载线路优化算法/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Austin Luo">
+      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
+      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="UDNZ">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h2 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/03/14/员工班车超低载线路优化算法/" itemprop="url">
+                  员工班车超低载线路优化算法
+                </a>
+              
+            
+          </h2>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2019-03-14 15:17:18" itemprop="dateCreated datePublished" datetime="2019-03-14T15:17:18+08:00">2019-03-14</time>
+            
+
+            
+          </span>
+
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h1 id="优化目标"><a href="#优化目标" class="headerlink" title="优化目标"></a>优化目标</h1><p>通过优化班车开行线路，保证员工有车可乘的前提下，节约班车运营成本。</p>
+<ul>
+<li>不增加班车车次的情况下，尽可能多地保证超载线路/站点的员工乘车需求。</li>
+<li>保证员工正常乘车的情况下，尽可能裁撤上座率过低的线路/站点</li>
+</ul>
+<h1 id="优化方案"><a href="#优化方案" class="headerlink" title="优化方案"></a>优化方案</h1><ul>
+<li>超载站点的员工能够有车可乘</li>
+<li>提高普通低载线路（站点）的上座率（$P$）</li>
+<li>裁撤整个极低载线路（$RL$）</li>
+</ul>
+<h1 id="限制条件"><a href="#限制条件" class="headerlink" title="限制条件"></a>限制条件</h1><ul>
+<li>绕行距离不超过 3KM</li>
+<li>核载在 70%-80% 以内，即 50 座的车 35-40 人以内</li>
+<li>大站发车发车时间应该在 5 分钟内</li>
+<li>超过 40 人为大站，可直接快车直达</li>
+<li>25 人以上开新线</li>
+<li>低载站点：低于 5 人考虑撤销或者合并站点</li>
+<li>低载线路：时间粒度 80%以上，低于 20 人的（50 座的车，40%）</li>
+<li>800 米内有的站点不设置新站点</li>
+<li>上班线时间不能晚于 9:10</li>
+</ul>
+<h1 id="假定和特点"><a href="#假定和特点" class="headerlink" title="假定和特点"></a>假定和特点</h1><ul>
+<li>车辆到站后，乘客上车立即出发。车辆不在站点处候车。粗略认为到站时间与发站时间一致。</li>
+<li>上班班车直至沿途只上客不下客，直至终点；下班班车从起点开始只下客不上客。</li>
+</ul>
+<h1 id="输入、输出"><a href="#输入、输出" class="headerlink" title="输入、输出"></a>输入、输出</h1><p>输入：</p>
+<ul>
+<li>所有线路信息<ul>
+<li>车辆总容量</li>
+<li>途径站点，每个站点的 GPS 位置、上客时间、每天平均上客人数、合计上客人数（去重）</li>
+</ul>
+</li>
+</ul>
+<p>外部依赖：</p>
+<ul>
+<li>地图 Api：<ul>
+<li>根据指定站点获得一定距离范围内的其他站点</li>
+<li>指定几个站之间的行车距离</li>
+</ul>
+</li>
+</ul>
+<p>输出：</p>
+<ul>
+<li>优化结果：<ul>
+<li>超载线路：站点 A/B/C… 分别超员人数已被线路 R1/R2/R3… 接走。</li>
+<li>普通低载线路：绕行站点 S1、S2、S3… 并接送乘客人数，示例：<ul>
+<li>优化前途经：A – B – C – D</li>
+<li>优化后途经：A – B – S– C – D</li>
+<li>在站点 S 处上客时间和人数</li>
+<li>当前线路新状态：正常/仍然低载</li>
+</ul>
+</li>
+<li>极低载线路：可裁撤的站点（上客人数变为零的站点），示例：<ul>
+<li>优化前途经：A – B – C – D</li>
+<li>优化后途经：A –(0)–(0)– D</li>
+<li>当前线路新状态：部分站点裁撤/整条线路裁撤</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h1 id="算法简述"><a href="#算法简述" class="headerlink" title="算法简述"></a>算法简述</h1><p><img src="/images/线路优化逻辑.png" alt="线路优化逻辑"></p>
+<p>我们会将所有的班车线路分为两大类三小类（忽略正常线路），对于这三小类线路，我们将采取不同的策略进行优化：</p>
+<ul>
+<li>超载线路（$O$）<ul>
+<li>不改变原本线路及其站点，仅对超载的站点进行局部优化，通过算法查找最适合到该站点接人的低载班次前来接人，从而满足超员部分的乘车需求。</li>
+<li>优化后，超载线路不再超载。算法无法优化的站点，作为结果返回。</li>
+</ul>
+</li>
+<li>低载线路（$L$）<ul>
+<li>普通低载线路（$LN$）<ul>
+<li>作为机动，绕行到超载站点接送员工的班车线路。</li>
+<li>优化后，载荷逐渐增加直至达到最大允许上座率 $PB$。无论线路是否已改版，均作为结果返回。</li>
+</ul>
+</li>
+<li>极低载线路（$LE$）<ul>
+<li>由于整条线路每个站点的上座率都较低，准备裁撤的线路。</li>
+<li>我们认为可以与超载线路等效处理，认定极低载线路各个站点的实际乘车人数即为超员人数即可，直到其他车次接走所有超员人数，该线路即可进行裁撤。</li>
+<li>优化后，线路的所有站点或部分站点被裁撤，可以作为结果返回。</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>我们将循环遍历每条超载线路，针对这两种线路上的站点，查找经过该站点附近满足一定条件的普通低载线路，让这些线路去接送该站点的乘客。超载线路遍历完成之后，再遍历极低载线路，并且在处理过程中，预期裁撤，当做超载处理。</p>
+<p>在循环过程中，每次使用普通低载线路去绕着接送超载线路乘客时，都会将相关站点数据更新到原始线路上，进入下一次迭代。例如，普通低载线路 $LN_1$ 绕行了站点 $S_n$，则在下一次循环迭代线路时，将会继承该站点，考虑为 $LN_1$ 线路有途径站点 $S_n$，并且在该站点上客 $X_n$ 人。</p>
+<p>最终，超载线路的乘客被普通低载线路接走，极低载线路当做超载线路处理，部分普通低载线路因为绕行接人成为正常线路。</p>
+<h1 id="算法细节"><a href="#算法细节" class="headerlink" title="算法细节"></a>算法细节</h1><h2 id="计算待优化站点的供需矛盾指标-X-n"><a href="#计算待优化站点的供需矛盾指标-X-n" class="headerlink" title="计算待优化站点的供需矛盾指标 $X_n$"></a>计算待优化站点的供需矛盾指标 $X_n$</h2><p>超载线路上有若干的站点，具体从哪里开始超载，需要优先优化哪个站点呢？</p>
+<p>假定所有超载站点都需要进行无差别优化，所有超员乘客都需要接送，对于待优化站点则无需排序，从起始站点开始依次优化即可。但考虑实际上优化幅度可能受限，无法大幅度调整，只进行局部优化，因此我们应当找出矛盾最尖锐的站点来进行优化，因此需要对待优化站点进行优先级排序。</p>
+<p>对于线路$R$，令：</p>
+<ul>
+<li>满载容量为 $C$</li>
+<li>共有站点数为 $e$，</li>
+<li>从起点到终点的站点序列为：$S_1$, $S_2$, $S_3$, … , $S_n$, … , $S_e$</li>
+<li>各站点未能满足的乘车需求人数为：$X_1$, $X_2$, $X_3$, … , $X_n$, … , $X_e$</li>
+</ul>
+<p>很显然，车辆的运力 $C$ 是一定的，而各个站点期待上车的人数可能是不一致的。对于超载的情况，需求大于供给，需求越旺盛，矛盾越激化。我们可以通过 $X_n$ 来作为供需矛盾的量化指标，对该指标进行排序，即可得到站点的重点优化顺序。</p>
+<p>下面开始进行 $X_n$ 量化分析的过程。</p>
+<p>统计一段时间内（$Period$）的乘车情况，则有：</p>
+<ul>
+<li>各站历史上车人数（取 $Period$ 内所有上车人数的并集去重）：$U_1$, $U_2$, $U_3$, … , $U_n$, … , $U_e$</li>
+<li>各站平均上车人数（取 $Period$ 内每日实际刷卡上车的平均数）：$A_1$, $A_2$, $A_3$, … , $A_n$, … , $A_e$</li>
+</ul>
+<p>从含义上讲，$U_n$ 表示在站点 $S_n$ 曾经乘坐过班车的总人数，其中一部分为常客，一部分为临时或偶尔乘坐班车的乘客；而 $A_n$，则可以认定为经常乘坐并且经常能够坐上车的乘客。很显然有：</p>
+<p>$$U_n ≥ A_n$$</p>
+<p>另一方面，对于 $A_n$ 的值，令班车出站 $S_n$ 时剩余的空座位数为 $E_n$，则班车入站时剩余的空座位数为 $E_{n-1}$，则有：</p>
+<p>$$A_n ≤ E_{n-1}$$</p>
+<p>考察 $E_{n-1}$，会有如下几种状态：</p>
+<ol>
+<li><p>$U_n$ &lt; $E_{n-1}$</p>
+<p>这种状态表示车辆入站时剩余座位总能满足乘客需求，此时应当认定为未超载状态，并且有：</p>
+<p>$$E_n = E_{n-1} - A_n$$<br>$$X_n = E_n * -1 &lt; 0$$</p>
+</li>
+<li><p>$A_n$ &lt;&lt; $E_{n-1}$</p>
+<p>在这种状态下，站点 $S_n$ 的常坐乘客只有 $A_n$，并且几乎都能满足需求。</p>
+<p>亦即，即使 $C$ &lt; $E_{n-1}$ + $U_n$ 成立，也不能说明该站点已经超载，应当认定为未超载状态。并且有：</p>
+<p>$$E_n = E_{n-1} - A_n$$<br>$$X_n = E_n * -1 &lt; 0$$</p>
+</li>
+<li><p>$A_n$ ≈ $E_{n-1}$</p>
+<p>在这种状态下，该站点平均乘坐人数都接近剩余空座数，则表示在该站点的载荷接近饱和，此时应当认定该站点为超载状态。很显然，班车出站时：</p>
+<p>$$E_n = 0$$<br>$$X_n = U_n - A_n $$</p>
+<p>由其他线路来解决超载问题时，应当将 $X_n$ 都接走。</p>
+<blockquote>
+<p>此时可以设定一个比例 $p\%$，认为只需要接走一定比例的乘客即可满足业务需求，则 $X_n$ = $U_n$ * $p\%$ - $A_n$。</p>
+</blockquote>
+</li>
+</ol>
+<p>对于起点站有 $E_0$ = $C$，从起点站进行推导，可以得到所有站点的 $X_1$, $X_2$, $X_3$, … , $X_n$, … , $X_e$，现在对 $X_n$ 按大小降序排列，即可得到站点矛盾激化程度，决定站点优化的顺序。</p>
+<h2 id="按-X-n-权重顺序优化超载站点"><a href="#按-X-n-权重顺序优化超载站点" class="headerlink" title="按 $X_n$ 权重顺序优化超载站点"></a>按 $X_n$ 权重顺序优化超载站点</h2><p><img src="/images/接站班车权重.png" alt="接站班车权重"></p>
+<p>对于超载站点 $S_n$，首先查找附近的站点作为“候选站点”，期待候选站点的车辆过来接送超载的部分员工。根据地理位置，可能找到多个候选站点，此时算法应当给出一个量化标准，衡量哪个站的哪辆车来接送才是最优解。</p>
+<blockquote>
+<p>仅考虑普通低载线路前来接送乘客。对于超低载线路，期待裁撤，按照超载处理。</p>
+</blockquote>
+<ul>
+<li>令当前需要处理的超载站点为：$S_n$</li>
+<li>令当前超载车次抵达 $S_n$ 的时刻为：$T_n$</li>
+<li>令找到的候选站点数为：$k$</li>
+<li>令候选站点的集合为：$S_{n,1}$, $S_{n,2}$, …, $S_{n,k}$</li>
+<li>令候选站点车辆抵达对应站点的时刻为：$T_{n,1}$, $T_{n,2}$…$T_{n,k}$</li>
+</ul>
+<p>令候选线路量化评分为 $Φ$，考虑 $Φ$ 与如下几个要素有关：</p>
+<ul>
+<li><p>A. 起点或目的地评分：分值为 1 或 0。</p>
+<p>对于上班（下班）班车，目的地（起点）应当一致。一致记分值为 1，否则分值为 0。</p>
+<blockquote>
+<p>考虑多目的地（起点）串联，如上班班车经过科兴再到腾大，或下班班车从朗科经过飞亚达、腾大、科兴之后再出发的情况。待考察的线路经过当前站点的目的地（起点）也可以计分为 1。</p>
+</blockquote>
+</li>
+<li><p>B. 时间差：得分区间为 [0, 100]</p>
+<p>候选车辆到站点 $S_{n,k}$ 的时刻，与当前站点到站乘车时刻 $T_n$ 的时间差，不得大于 $ΔT_{max}$，此时有：</p>
+<p>$$ΔT_{n,k} = T_n - T_{n,k}$$<br>$$ | ΔT_{n,k} | &lt; ΔT_{max}$$<br>$$T_n - ΔT_{max} &lt; T_{n,k} &lt; T_n + ΔT_{max}$$</p>
+<p>根据实际情况，当 $ΔT_{n,k}$ &gt; 0 时，即候选站点的到站时间早于当前站点 $S_n$ 的到站时间，为尽可能地不延误乘客上车时间，更适合前来接站，此时评分较高；当 $ΔT_{n,k}$ &lt; 0 时，虽然时间延迟，但仍然在 $ΔT_{max}$ 范围内，此时评分较低。</p>
+<p>根据上述情况，可以根据 $T_{n,k}$ 在数值域 [$T_n - ΔT_{max}$, $T_n - ΔT_{max}$] 的位置情况进行评分，值越小，分越高。</p>
+</li>
+<li><p>C. 时间顺延：得分区间为 [0, 100]</p>
+<p>考虑上述时间差的存在，同时由于候选班车绕行接送当前站点 $S_n$ 的乘客，势必因为往返而多消耗时间。我们需要估算这个时间，用于评估整条候选线路抵达终点时，延时最多不超过 $ΔT_{sum(max)}$。</p>
+<p>候选班车调整前开行站点顺序为 $S_{n,k}$ -&gt; $S_{n,k+1}$，调整后开行站点顺序为 $S_{n,k}$ -&gt; $S_{n}$ -&gt; $S_{n,k+1}$，我们将指定候选线路因为第 $x$ 次绕行导致的时间延迟记为 $ΔT_x$，则有：</p>
+<p>$$ΔT_x = f(S_n, S_{n,k}, S_{n,k+1})$$</p>
+<p>其中，函数 $f$ 可以是通过地图 Api 获取预测时间、通过绕行距离/流程、绕行平均速度计算时间等。</p>
+<p>$$<br>f=\begin{cases}<br>地图 API 预测从 S_n 经过 S_{n,k} 到 S_{n,k+1} 的耗时 \<br>\frac{从 S_n 经过 S_{n,k} 到 S_{n,k+1} 的距离}{平均速度}\end{cases}<br>$$</p>
+<p>最后，累计所有 $ΔT_x$，即可得到整条线路在调整后预计的时间顺延：</p>
+<p>$$\sum_{x=1}^{N}|ΔT_x| &lt; ΔT_{sum(max)}$$</p>
+<blockquote>
+<p>实际上，对于候选站点以后的所有站点，其上车时间均应当往后调整 $\sum_{x=1}^{N}|ΔT_x|$</p>
+</blockquote>
+</li>
+<li><p>D. 距离：得分区间为 [0, 100]</p>
+<p>为尽可能小地调整，尽可能小地影响现有班车站点及乘车时间，我们应当优选距离当前站点最近的候选车辆前来接送乘客。令 $S_{n,k}$ 与 $S_n$ 之间的距离为 $L_{n,k}$，并且该距离不得大于 $L_{max}$，则有：</p>
+<p>$$0 &lt; L_{n,k} &lt; L_{max}$$</p>
+<p>根据实际情况，距离越近，得分应当越高。</p>
+<blockquote>
+<p>对于 $L_{n,k}$ 的计算，可以考察两点之间的直线距离、行车距离、当前站到经行路线的最近距离等，有条件可以再结合交通路况进行评估。</p>
+</blockquote>
+</li>
+<li><p>E. 剩余座位数：得分区间为 [0, 100]</p>
+<p>候选车辆应当有剩余的座位，才有前来接站的价值。并且尽可能地由一辆车将当前站点所有超员的乘客一次性接走为宜。因此我们需要考察候选车辆的剩余座位数 $ω$，考察 $ω$ 和 $X_n$ 的大小关系：</p>
+<ul>
+<li><p>0 &lt; $ω$ &lt; $X_n$</p>
+<p>此时表示剩余座位<strong>不足以</strong>一次性接走所有乘客，该次车不应当作为优选，并且 $ω$ 越接近 0，评分越低。</p>
+</li>
+<li><p>$X_n$ &lt; $ω$</p>
+<p>此时表示剩余座位<strong>可以</strong>一次性接走所有乘客，该次车应当作为优选，同时 $ω$ 越接近 $X_n$，评分越高。</p>
+</li>
+</ul>
+<p>基于以上情况，可以根据剩余座位数为当前候选站点进行评分。</p>
+<blockquote>
+<p>注：$ω$ 应当取候选车辆抵达终点时的剩余座位数。</p>
+</blockquote>
+</li>
+<li><p>F. 绕行站点数：得分区间为 [0, 100]</p>
+<p>根据规则，候选车辆不得绕行过多站点。根据候选车辆已经绕行的站点数与最大绕行站点数阈值 $N$ 比较，绕行越少，评分越高。</p>
+</li>
+</ul>
+<p>根据以上要素，对 B~F 进行加权综合评分，得到：</p>
+<p>$$Φ = A <em> (B </em> φ_b + C <em> φ_c + D </em> φ_d + E <em> φ_e + F </em> φ_f)$$</p>
+<p>对 $Φ$ 进行降序排列，即可得到最优的候选线路。</p>
+<p>以上，对所有待优化线路迭代计算之后，即可以得到整个的优化方案。</p>
+<h1 id="附：代码表"><a href="#附：代码表" class="headerlink" title="附：代码表"></a>附：代码表</h1><table>
+<thead>
+<tr>
+<th>代码</th>
+<th>含义</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$R$</td>
+<td>线路（Route）</td>
+</tr>
+<tr>
+<td>$P$</td>
+<td>实际上座率</td>
+</tr>
+<tr>
+<td>$PB$</td>
+<td>最大上座率（$PB$ &lt; 100%）</td>
+<td>为满足特殊情况，通常需要预留一定的空座</td>
+</tr>
+<tr>
+<td>$PE$</td>
+<td>最小上座率</td>
+<td>满足 $PE$ &lt; $P$ &lt; $PB$ &lt; 100% 的线路</td>
+</tr>
+<tr>
+<td>$O$</td>
+<td>超载线路（Overload）</td>
+<td>满足 $PB$ &lt; $P$ 的线路</td>
+</tr>
+<tr>
+<td>$P_L$</td>
+<td>极低载阈值（0 &lt; $P_L$ &lt; $PE$）</td>
+<td>低载程度，界定需要裁撤的极低载线路的阈值</td>
+</tr>
+<tr>
+<td>$L$</td>
+<td>低载线（Low）</td>
+<td>0 &lt; $P$ &lt; $PE$</td>
+</tr>
+<tr>
+<td>$LN$</td>
+<td>一般低载线路（Low, Normal）</td>
+<td>$P_L$ &lt; $P$ &lt; $PE$</td>
+</tr>
+<tr>
+<td>$LE$</td>
+<td>极低载线路（Low, Extreme）</td>
+<td>0 &lt; $P$ &lt; $P_L$</td>
+</tr>
+<tr>
+<td>$C$</td>
+<td>车辆的运力，满载容量人数</td>
+<td></td>
+</tr>
+<tr>
+<td>$U_n$</td>
+<td>站点 $S_n$ 的乘车总人数</td>
+<td>一段时间内在该站点曾经乘坐班车的总人数</td>
+</tr>
+<tr>
+<td>$A_n$</td>
+<td>站点 $S_n$ 的平均乘车人数</td>
+<td>一段时间内在该站点曾经乘坐班车的平均人数</td>
+</tr>
+<tr>
+<td>$E_n$</td>
+<td>从 $S_n$ 出站时车上的剩余空座数</td>
+<td></td>
+</tr>
+<tr>
+<td>$X_n$</td>
+<td>在 $S_n$ 站未能满足的潜在乘车需求</td>
+<td>即该站点的超载人数</td>
+</tr>
+<tr>
+<td>$S_{n,k}$</td>
+<td>在 $S_n$ 站附近的其他待选站点</td>
+<td>期待这些待选站点的车前来接送乘客</td>
+</tr>
+<tr>
+<td>$T_n$</td>
+<td>班车抵达 $S_n$ 站的时刻</td>
+<td></td>
+</tr>
+<tr>
+<td>$T_{n,k}$</td>
+<td>班车抵达 $S_{n,k}$ 站的时刻</td>
+<td></td>
+</tr>
+<tr>
+<td>$ΔT_{n,k}$</td>
+<td>\</td>
+<td>$T_n$ - $T_{n,k}$ \</td>
+<td></td>
+<td>班车抵达 $S_n$ 和 $S_{n,k}$ 站之间的时间差</td>
+</tr>
+<tr>
+<td>$ΔT_{max}$</td>
+<td>允许的 $ΔT_{n,k}$ 最大值</td>
+<td></td>
+</tr>
+<tr>
+<td>$ΔT_{sum(max)}$</td>
+<td>累积的 $ΔT_{n,k}$</td>
+<td></td>
+</tr>
+<tr>
+<td>$L_{n,k}$</td>
+<td>$S_{n,k}$ 与 $S_n$ 之间的距离</td>
+<td></td>
+</tr>
+<tr>
+<td>$L_{max}$</td>
+<td>允许的 $L_{n,k}$ 最大值</td>
+</tr>
+</tbody>
+</table>
+
+          
+        
+      
+    </div>
+
+    
+
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
     
       
 
@@ -1691,7 +2143,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2018-11-30 20:59:46" itemprop="dateModified" datetime="2018-11-30T20:59:46+08:00">2018-11-30</time>
+                <time title="修改时间：2019-04-04 10:16:33" itemprop="dateModified" datetime="2019-04-04T10:16:33+08:00">2019-04-04</time>
               
             
           </span>
@@ -1794,149 +2246,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://www.udnz.com/2018/06/15/记一次-NET-Framework-不兼容-HTTP-COOKIE-协议标准的问题跟踪/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="Austin Luo">
-      <meta itemprop="description" content="架构师，腾讯<br />专注微服务和软件基础设施建设">
-      <meta itemprop="image" content="https://avatars3.githubusercontent.com/u/934574?s=400&u=e82170d672ed95a22dfe72374fde752cf973b785&v=4">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="UDNZ">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h2 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/06/15/记一次-NET-Framework-不兼容-HTTP-COOKIE-协议标准的问题跟踪/" itemprop="url">
-                  记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪
-                </a>
-              
-            
-          </h2>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-
-            
-            
-            
-
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-
-              
-                
-              
-
-              <time title="创建时间：2018-06-15 16:48:16" itemprop="dateCreated datePublished" datetime="2018-06-15T16:48:16+08:00">2018-06-15</time>
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <p>我们在后端系统实现了 HTTP 请求的代理类，用于请求其他第三方系统。大致的请求流程是这样的：</p>
-<p><img src="/images/记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪-1.png" alt=""></p>
-<p>消费系统不能直接请求业务系统的 HTTP 接口，需要由中间的 HttpHelper 代理请求。其中 HttpHelper 接受消费系统传入的各种参数，包括要请求的 URL、METHOD、HEAD、BODY 等，在实际生产中一直运行得很好，直到如下异常的出现：</p>
-<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">System.Net.CookieException: Cookie format error.</span><br><span class="line">   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)</span><br></pre></td></tr></table></figure>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/06/15/记一次-NET-Framework-不兼容-HTTP-COOKIE-协议标准的问题跟踪/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -1988,7 +2297,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">14</span>
+                    <span class="site-state-item-count">15</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -2047,7 +2356,13 @@
                     
                       
                     
-                    <span class="site-state-item-count">22</span>
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">23</span>
                     <span class="site-state-item-name">标签</span>
                   </a>
                 </div>
