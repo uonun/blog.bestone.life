@@ -151,6 +151,20 @@
 
   
   <url>
+    <loc>https://www.udnz.com/tags/Linux/</loc>
+    <lastmod>2021-04-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.udnz.com/tags/DevOps/</loc>
+    <lastmod>2021-04-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.udnz.com/tags/k8s/</loc>
     <lastmod>2021-04-10</lastmod>
     <changefreq>daily</changefreq>
@@ -172,28 +186,7 @@
   </url>
   
   <url>
-    <loc>https://www.udnz.com/tags/Linux/</loc>
-    <lastmod>2021-04-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.udnz.com/tags/DevOps/</loc>
-    <lastmod>2021-04-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://www.udnz.com/tags/Nginx/</loc>
-    <lastmod>2021-04-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.udnz.com/tags/Architecture/</loc>
     <lastmod>2021-04-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -215,6 +208,13 @@
   
   <url>
     <loc>https://www.udnz.com/tags/Protobuf/</loc>
+    <lastmod>2021-04-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>https://www.udnz.com/tags/Architecture/</loc>
     <lastmod>2021-04-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
@@ -256,6 +256,13 @@
   </url>
   
   <url>
+    <loc>https://www.udnz.com/tags/VSC/</loc>
+    <lastmod>2021-04-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://www.udnz.com/tags/SVN/</loc>
     <lastmod>2021-04-10</lastmod>
     <changefreq>daily</changefreq>
@@ -264,13 +271,6 @@
   
   <url>
     <loc>https://www.udnz.com/tags/GIT/</loc>
-    <lastmod>2021-04-10</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://www.udnz.com/tags/VSC/</loc>
     <lastmod>2021-04-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.6</priority>
