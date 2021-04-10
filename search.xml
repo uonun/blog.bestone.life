@@ -118,6 +118,23 @@
       </tags>
   </entry>
   <entry>
+    <title>Linux 环境一键打包发布脚本</title>
+    <url>/2018/10/06/Linux-%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E6%89%93%E5%8C%85%E5%8F%91%E5%B8%83%E8%84%9A%E6%9C%AC/</url>
+    <content><![CDATA[<p>以下脚本作为工作笔记沉淀，记录一下。</p>
+<span id="more"></span>
+
+<p>deploy.sh</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 本脚本用于开发环境，直接打包需要发布的文件，然后通过 SSH 复制到服务器并直接通过 pm2 启动执行。</span></span><br><span class="line"><span class="comment"># 主要功能：</span></span><br><span class="line"><span class="comment">#   - 打包本地文件</span></span><br><span class="line"><span class="comment">#   - 剪切备份 $BUILDDIR 目录（实际程序执行的目录）</span></span><br><span class="line"><span class="comment">#   - 复制到远程服务器 $BUILDDIR 目录</span></span><br><span class="line"><span class="comment">#   - 解压</span></span><br><span class="line"><span class="comment">#   - 使用备份的配置文件覆盖</span></span><br><span class="line"><span class="comment">#   - 启动程序</span></span><br><span class="line"></span><br><span class="line">WORKROOT=/path/to/your/dir/on/remote/server</span><br><span class="line">BUILDDIR=<span class="variable">$WORKROOT</span>/build</span><br><span class="line"></span><br><span class="line">SKEY=<span class="string">&quot; -i ~/.ssh/your-ssh-key-file&quot;</span></span><br><span class="line">SCHANNEL=<span class="string">&quot;your-ssh-user@your-ssh-host&quot;</span></span><br><span class="line">SROOT=<span class="variable">$SCHANNEL</span>:<span class="variable">$WORKROOT</span></span><br><span class="line">SBUILD=<span class="variable">$SCHANNEL</span>:<span class="variable">$BUILDDIR</span></span><br><span class="line">DATE=`date <span class="string">&#x27;+%Y-%m-%d%H%M%S&#x27;</span>`</span><br><span class="line"></span><br><span class="line">. ./bash/pack.sh <span class="variable">$DATE</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;copying files...&quot;</span></span><br><span class="line">scp <span class="variable">$SKEY</span> -r ./build/build-<span class="variable">$DATE</span>.zip <span class="variable">$SROOT</span></span><br><span class="line">ssh <span class="variable">$SKEY</span> <span class="variable">$SCHANNEL</span> mv <span class="variable">$BUILDDIR</span> <span class="variable">$BUILDDIR</span>-<span class="variable">$DATE</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;unzipping files...&quot;</span></span><br><span class="line">ssh <span class="variable">$SKEY</span> <span class="variable">$SCHANNEL</span> unzip -q <span class="variable">$WORKROOT</span>/build-<span class="variable">$DATE</span>.zip -d <span class="variable">$BUILDDIR</span></span><br><span class="line"><span class="comment">#ssh $SKEY $SCHANNEL cp $WORKROOT/bak/etc/config.json $BUILDDIR/etc/config.json</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;starting...&quot;</span></span><br><span class="line">CMD=<span class="string">&quot;cd <span class="variable">$BUILDDIR</span> ; pm2 restart ./etc/pm2.config.json&quot;</span></span><br><span class="line">ssh <span class="variable">$SKEY</span> <span class="variable">$SCHANNEL</span> <span class="variable">$CMD</span></span><br></pre></td></tr></table></figure>
+
+<p>pack.sh</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 需要在项目根目录执行，如：./bash/pack.sh</span></span><br><span class="line"></span><br><span class="line">DATE=<span class="variable">$1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$DATE</span>&quot;</span> ] ; <span class="keyword">then</span></span><br><span class="line">  DATE=`date <span class="string">&#x27;+%Y-%m-%d%H%M%S&#x27;</span>`</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份本地配置，使用生产环境配置</span></span><br><span class="line">mv ./etc/config.json ./etc/config.dev.json.bak</span><br><span class="line">mv ./etc/config.prod.json ./etc/config.json</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;packing files...&quot;</span></span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./bin</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./dal</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./etc -i ./etc/*.json</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./controller</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./middlewares</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./models</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./node_modules</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./public</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./routes</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./utils</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./views</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./app.js</span><br><span class="line"></span><br><span class="line"><span class="comment"># 还原配置</span></span><br><span class="line">mv ./etc/config.json ./etc/config.prod.json</span><br><span class="line">mv ./etc/config.dev.json.bak ./etc/config.json</span><br></pre></td></tr></table></figure>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+        <tag>DevOps</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Nginx 安装部署及安全加固</title>
     <url>/2021/04/10/Nginx-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2%E5%8F%8A%E5%AE%89%E5%85%A8%E5%8A%A0%E5%9B%BA/</url>
     <content><![CDATA[<h1 id="安装部署"><a href="#安装部署" class="headerlink" title="安装部署"></a>安装部署</h1><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># http://nginx.org/en/linux_packages.html#RHEL-CentOS</span></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;[nginx-stable]</span></span><br><span class="line"><span class="string">name=nginx stable repo</span></span><br><span class="line"><span class="string">baseurl=http://nginx.org/packages/centos/\$releasever/\$basearch/</span></span><br><span class="line"><span class="string">gpgcheck=1</span></span><br><span class="line"><span class="string">enabled=1</span></span><br><span class="line"><span class="string">gpgkey=https://nginx.org/keys/nginx_signing.key</span></span><br><span class="line"><span class="string">module_hotfixes=true</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">[nginx-mainline]</span></span><br><span class="line"><span class="string">name=nginx mainline repo</span></span><br><span class="line"><span class="string">baseurl=http://nginx.org/packages/mainline/centos/\$releasever/\$basearch/</span></span><br><span class="line"><span class="string">gpgcheck=1</span></span><br><span class="line"><span class="string">enabled=0</span></span><br><span class="line"><span class="string">gpgkey=https://nginx.org/keys/nginx_signing.key</span></span><br><span class="line"><span class="string">module_hotfixes=true&quot;</span> &gt; /etc/yum.repos.d/nginx.repo</span><br><span class="line"></span><br><span class="line">yum-config-manager --<span class="built_in">enable</span> nginx-mainline</span><br><span class="line">yum install nginx</span><br><span class="line"></span><br><span class="line">systemctl start nginx <span class="comment">#启动</span></span><br><span class="line">systemctl restart nginx <span class="comment">#重启</span></span><br><span class="line">systemctl stop nginx   <span class="comment">#终止</span></span><br><span class="line">systemctl <span class="built_in">enable</span> nginx  <span class="comment">#开机自启</span></span><br><span class="line">systemctl <span class="built_in">disable</span> nginx   <span class="comment">#禁止开机自启</span></span><br></pre></td></tr></table></figure>
@@ -145,20 +162,94 @@
       </tags>
   </entry>
   <entry>
-    <title>Linux 环境一键打包发布脚本</title>
-    <url>/2018/10/06/Linux-%E7%8E%AF%E5%A2%83%E4%B8%80%E9%94%AE%E6%89%93%E5%8C%85%E5%8F%91%E5%B8%83%E8%84%9A%E6%9C%AC/</url>
-    <content><![CDATA[<p>以下脚本作为工作笔记沉淀，记录一下。</p>
+    <title>Understanding Architecture</title>
+    <url>/2018/09/30/Understanding-Architecture/</url>
+    <content><![CDATA[<h1 id="架构是这样定义的"><a href="#架构是这样定义的" class="headerlink" title="架构是这样定义的"></a>架构是这样定义的</h1><ul>
+<li>每个系统都有一个架构</li>
+<li>架构由架构元素以及相互之间的关系构成</li>
+<li>系统是为了满足 <strong>利益相关者（stakeholder）</strong> 的需求而构建的</li>
+<li>利益相关者都有自己的<strong>关注点（concerns）</strong></li>
+<li>架构由架构文档描述</li>
+<li>架构文档描述了一系列的<strong>架构视角</strong></li>
+<li>每个视角都解决并且对应到利益相关者的关注点。</li>
+</ul>
+<p>架构师的首要任务是尽最大可能找出所有利益相关者，业务方，产品经理，客户/用户，开发经理，工程师，项目经理，测试人员，运维人员，产品运营人员等等都有可能是利益相关者，架构师要充分和利益相关者沟通，深入理解他们的关注点和痛点，并出架构解决这些关注点。架构师常犯错误是漏掉重要的利益相关者，沟通不充分，都会造成架构有欠缺，不能满足利益相关者的需求。利益相关者的关注点是有可能冲突的，比如管理层（可管理性）vs技术方（性能），业务方（多快好省）vs 技术方（可靠稳定），这需要架构师去灵活平衡，如何平衡体现了架构师的水平和价值。</p>
 <span id="more"></span>
 
-<p>deploy.sh</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 本脚本用于开发环境，直接打包需要发布的文件，然后通过 SSH 复制到服务器并直接通过 pm2 启动执行。</span></span><br><span class="line"><span class="comment"># 主要功能：</span></span><br><span class="line"><span class="comment">#   - 打包本地文件</span></span><br><span class="line"><span class="comment">#   - 剪切备份 $BUILDDIR 目录（实际程序执行的目录）</span></span><br><span class="line"><span class="comment">#   - 复制到远程服务器 $BUILDDIR 目录</span></span><br><span class="line"><span class="comment">#   - 解压</span></span><br><span class="line"><span class="comment">#   - 使用备份的配置文件覆盖</span></span><br><span class="line"><span class="comment">#   - 启动程序</span></span><br><span class="line"></span><br><span class="line">WORKROOT=/path/to/your/dir/on/remote/server</span><br><span class="line">BUILDDIR=<span class="variable">$WORKROOT</span>/build</span><br><span class="line"></span><br><span class="line">SKEY=<span class="string">&quot; -i ~/.ssh/your-ssh-key-file&quot;</span></span><br><span class="line">SCHANNEL=<span class="string">&quot;your-ssh-user@your-ssh-host&quot;</span></span><br><span class="line">SROOT=<span class="variable">$SCHANNEL</span>:<span class="variable">$WORKROOT</span></span><br><span class="line">SBUILD=<span class="variable">$SCHANNEL</span>:<span class="variable">$BUILDDIR</span></span><br><span class="line">DATE=`date <span class="string">&#x27;+%Y-%m-%d%H%M%S&#x27;</span>`</span><br><span class="line"></span><br><span class="line">. ./bash/pack.sh <span class="variable">$DATE</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;copying files...&quot;</span></span><br><span class="line">scp <span class="variable">$SKEY</span> -r ./build/build-<span class="variable">$DATE</span>.zip <span class="variable">$SROOT</span></span><br><span class="line">ssh <span class="variable">$SKEY</span> <span class="variable">$SCHANNEL</span> mv <span class="variable">$BUILDDIR</span> <span class="variable">$BUILDDIR</span>-<span class="variable">$DATE</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;unzipping files...&quot;</span></span><br><span class="line">ssh <span class="variable">$SKEY</span> <span class="variable">$SCHANNEL</span> unzip -q <span class="variable">$WORKROOT</span>/build-<span class="variable">$DATE</span>.zip -d <span class="variable">$BUILDDIR</span></span><br><span class="line"><span class="comment">#ssh $SKEY $SCHANNEL cp $WORKROOT/bak/etc/config.json $BUILDDIR/etc/config.json</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;starting...&quot;</span></span><br><span class="line">CMD=<span class="string">&quot;cd <span class="variable">$BUILDDIR</span> ; pm2 restart ./etc/pm2.config.json&quot;</span></span><br><span class="line">ssh <span class="variable">$SKEY</span> <span class="variable">$SCHANNEL</span> <span class="variable">$CMD</span></span><br></pre></td></tr></table></figure>
-
-<p>pack.sh</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="meta">#!/bin/sh</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 需要在项目根目录执行，如：./bash/pack.sh</span></span><br><span class="line"></span><br><span class="line">DATE=<span class="variable">$1</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> [ -z <span class="string">&quot;<span class="variable">$DATE</span>&quot;</span> ] ; <span class="keyword">then</span></span><br><span class="line">  DATE=`date <span class="string">&#x27;+%Y-%m-%d%H%M%S&#x27;</span>`</span><br><span class="line"><span class="keyword">fi</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 备份本地配置，使用生产环境配置</span></span><br><span class="line">mv ./etc/config.json ./etc/config.dev.json.bak</span><br><span class="line">mv ./etc/config.prod.json ./etc/config.json</span><br><span class="line"></span><br><span class="line"><span class="built_in">echo</span> <span class="string">&quot;packing files...&quot;</span></span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./bin</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./dal</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./etc -i ./etc/*.json</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./controller</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./middlewares</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./models</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./node_modules</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./public</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./routes</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./utils</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./views</span><br><span class="line">zip -r -q ./build/build-<span class="variable">$DATE</span>.zip ./app.js</span><br><span class="line"></span><br><span class="line"><span class="comment"># 还原配置</span></span><br><span class="line">mv ./etc/config.json ./etc/config.prod.json</span><br><span class="line">mv ./etc/config.dev.json.bak ./etc/config.json</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Architecture represents the significant design decisions that shape a system, where significant is measured by cost of change.</p>
+<p>—- Grady Booch, UML的创始人之一</p>
+<p>架构表示对一个系统的成型起关键作用的设计决策，这里的关键性是由“改变它”的成本来决定的。</p>
+</blockquote>
+<p>微服务中每个服务可以独立演变，它的cost of change比较小，整体架构比较灵活，是一种支持创新的演化式架构。</p>
+<h1 id="Architecture-Requirements"><a href="#Architecture-Requirements" class="headerlink" title="Architecture Requirements"></a>Architecture Requirements</h1><table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Easy to separate</td>
+<td>Autonomy</td>
+<td>易分离，自治性</td>
+</tr>
+<tr>
+<td>Easy to understand</td>
+<td>Understandablility</td>
+<td>可理解性</td>
+</tr>
+<tr>
+<td>Easy to extend</td>
+<td>Extensibility</td>
+<td>可延展性</td>
+</tr>
+<tr>
+<td>Easy to change</td>
+<td>Changeability</td>
+<td>可变性</td>
+</tr>
+<tr>
+<td>Easy to replace</td>
+<td>Replaceability</td>
+<td>可替换性</td>
+</tr>
+<tr>
+<td>Easy to deploy</td>
+<td>Deployability</td>
+<td>可部署性</td>
+</tr>
+<tr>
+<td>Easy to scale</td>
+<td>Scalability</td>
+<td>伸缩性，可扩展性</td>
+</tr>
+<tr>
+<td>Easy to recover</td>
+<td>Resilience</td>
+<td>可恢复性</td>
+</tr>
+<tr>
+<td>Easy to connect</td>
+<td>Uniform interface</td>
+<td>易连接，易集成，统一接口</td>
+</tr>
+<tr>
+<td>Easy to afford</td>
+<td>Cost-efficiency</td>
+<td>成本效率，性价比</td>
+</tr>
+</tbody></table>
+<p>架构的目标是用于管理复杂性、易变性和不确定性，以确保在长期的系统演化过程中，一部分架构的变化不会对架构的其它部分产生不必要的负面影响。这样做可以确保业务和研发效率的敏捷，让应用的易变部分能够频繁地变化，对应用的其它部分的影响尽可能的小。</p>
+<h1 id="微服务更多是关于组织和团队，而不是技术"><a href="#微服务更多是关于组织和团队，而不是技术" class="headerlink" title="微服务更多是关于组织和团队，而不是技术"></a>微服务更多是关于组织和团队，而不是技术</h1><blockquote>
+<p>organizations which design systems … are constrained to produce designs which are copies of the communication structures of these organizations.</p>
+<p>康威定律：设计系统的组织，其产生的设计和架构等价于组织间的沟通结构.</p>
+</blockquote>
+<p><img src="https://upload-images.jianshu.io/upload_images/1411204-7b51d528373115c0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="image"></p>
 ]]></content>
       <tags>
-        <tag>Linux</tag>
-        <tag>DevOps</tag>
+        <tag>Architecture</tag>
       </tags>
   </entry>
   <entry>
@@ -264,97 +355,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Understanding Architecture</title>
-    <url>/2018/09/30/Understanding-Architecture/</url>
-    <content><![CDATA[<h1 id="架构是这样定义的"><a href="#架构是这样定义的" class="headerlink" title="架构是这样定义的"></a>架构是这样定义的</h1><ul>
-<li>每个系统都有一个架构</li>
-<li>架构由架构元素以及相互之间的关系构成</li>
-<li>系统是为了满足 <strong>利益相关者（stakeholder）</strong> 的需求而构建的</li>
-<li>利益相关者都有自己的<strong>关注点（concerns）</strong></li>
-<li>架构由架构文档描述</li>
-<li>架构文档描述了一系列的<strong>架构视角</strong></li>
-<li>每个视角都解决并且对应到利益相关者的关注点。</li>
-</ul>
-<p>架构师的首要任务是尽最大可能找出所有利益相关者，业务方，产品经理，客户/用户，开发经理，工程师，项目经理，测试人员，运维人员，产品运营人员等等都有可能是利益相关者，架构师要充分和利益相关者沟通，深入理解他们的关注点和痛点，并出架构解决这些关注点。架构师常犯错误是漏掉重要的利益相关者，沟通不充分，都会造成架构有欠缺，不能满足利益相关者的需求。利益相关者的关注点是有可能冲突的，比如管理层（可管理性）vs技术方（性能），业务方（多快好省）vs 技术方（可靠稳定），这需要架构师去灵活平衡，如何平衡体现了架构师的水平和价值。</p>
-<span id="more"></span>
-
-<blockquote>
-<p>Architecture represents the significant design decisions that shape a system, where significant is measured by cost of change.</p>
-<p>—- Grady Booch, UML的创始人之一</p>
-<p>架构表示对一个系统的成型起关键作用的设计决策，这里的关键性是由“改变它”的成本来决定的。</p>
-</blockquote>
-<p>微服务中每个服务可以独立演变，它的cost of change比较小，整体架构比较灵活，是一种支持创新的演化式架构。</p>
-<h1 id="Architecture-Requirements"><a href="#Architecture-Requirements" class="headerlink" title="Architecture Requirements"></a>Architecture Requirements</h1><table>
-<thead>
-<tr>
-<th>Requirement</th>
-<th>Feature</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Easy to separate</td>
-<td>Autonomy</td>
-<td>易分离，自治性</td>
-</tr>
-<tr>
-<td>Easy to understand</td>
-<td>Understandablility</td>
-<td>可理解性</td>
-</tr>
-<tr>
-<td>Easy to extend</td>
-<td>Extensibility</td>
-<td>可延展性</td>
-</tr>
-<tr>
-<td>Easy to change</td>
-<td>Changeability</td>
-<td>可变性</td>
-</tr>
-<tr>
-<td>Easy to replace</td>
-<td>Replaceability</td>
-<td>可替换性</td>
-</tr>
-<tr>
-<td>Easy to deploy</td>
-<td>Deployability</td>
-<td>可部署性</td>
-</tr>
-<tr>
-<td>Easy to scale</td>
-<td>Scalability</td>
-<td>伸缩性，可扩展性</td>
-</tr>
-<tr>
-<td>Easy to recover</td>
-<td>Resilience</td>
-<td>可恢复性</td>
-</tr>
-<tr>
-<td>Easy to connect</td>
-<td>Uniform interface</td>
-<td>易连接，易集成，统一接口</td>
-</tr>
-<tr>
-<td>Easy to afford</td>
-<td>Cost-efficiency</td>
-<td>成本效率，性价比</td>
-</tr>
-</tbody></table>
-<p>架构的目标是用于管理复杂性、易变性和不确定性，以确保在长期的系统演化过程中，一部分架构的变化不会对架构的其它部分产生不必要的负面影响。这样做可以确保业务和研发效率的敏捷，让应用的易变部分能够频繁地变化，对应用的其它部分的影响尽可能的小。</p>
-<h1 id="微服务更多是关于组织和团队，而不是技术"><a href="#微服务更多是关于组织和团队，而不是技术" class="headerlink" title="微服务更多是关于组织和团队，而不是技术"></a>微服务更多是关于组织和团队，而不是技术</h1><blockquote>
-<p>organizations which design systems … are constrained to produce designs which are copies of the communication structures of these organizations.</p>
-<p>康威定律：设计系统的组织，其产生的设计和架构等价于组织间的沟通结构.</p>
-</blockquote>
-<p><img src="https://upload-images.jianshu.io/upload_images/1411204-7b51d528373115c0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/700" alt="image"></p>
-]]></content>
-      <tags>
-        <tag>Architecture</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Using portable commands like zip/tar on Windows</title>
     <url>/2019/01/23/Using-portable-commands-like-zip-tar-on-Windows/</url>
     <content><![CDATA[<h1 id="在-Windows-上使用-Mac-Linux-上的-zip-tar-等命令"><a href="#在-Windows-上使用-Mac-Linux-上的-zip-tar-等命令" class="headerlink" title="在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令"></a>在 Windows 上使用 Mac/Linux 上的 zip/tar 等命令</h1><p>开发时时而在 MAC、Linux 上，时而在 Windows 上，脚本执行环境无法统一是个大问题。所幸我们使用的 Git 中带有 MINGW32（或安装 CYGWIN），这里面已经有很多的非 Windows 平台命令了。</p>
@@ -417,24 +417,6 @@
 ]]></content>
       <tags>
         <tag>Visual Studio</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>在 Visual Studio Code 中使用 MINGW32 作为终端</title>
-    <url>/2018/10/08/%E5%9C%A8-Visual-Studio-Code-%E4%B8%AD%E4%BD%BF%E7%94%A8-MINGW32-%E4%BD%9C%E4%B8%BA%E7%BB%88%E7%AB%AF/</url>
-    <content><![CDATA[<p>打开 Visual Studio Code 的设置，按如下配置即可：</p>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="comment">// 找到您的 git 目录</span></span><br><span class="line">  <span class="attr">&quot;terminal.integrated.shell.windows&quot;</span>: <span class="string">&quot;C:\\Program Files (x86)\\Git\\bin\\bash.exe&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;terminal.integrated.shellArgs.windows&quot;</span>: [<span class="string">&quot;--login&quot;</span>, <span class="string">&quot;-i&quot;</span>],</span><br><span class="line">  <span class="comment">// 需要的环境变量</span></span><br><span class="line">  <span class="attr">&quot;terminal.integrated.env.windows&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;HOME&quot;</span>: <span class="string">&quot;/d/austinluo/Documents/githome&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>附：</p>
-<p>我自己修改了当前用户的个人文件夹，通过上述方式可以解决 VSC 中 terminal 的 HOME 位置不对的问题（可以正常加载 .ssh 及相关的 key），但 VSC 默认自带的 Git 仍然会找到系统默认位置的个人文件夹，这个可以通过 junction 命令来解决：</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在系统默认的个人文件夹下创建迁移过的新位置的软连接</span></span><br><span class="line">junction64.exe -s C:\Users\austinluo\Documents -s D:\austinluo\Documents</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<p>通过注册表完整设置和迁移个人文件夹位置可能不会出现上述情况。</p>
-</blockquote>
-]]></content>
-      <tags>
-        <tag>VSC</tag>
       </tags>
   </entry>
   <entry>
@@ -563,6 +545,96 @@
       <tags>
         <tag>SVN</tag>
         <tag>GIT</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>在 Visual Studio Code 中使用 MINGW32 作为终端</title>
+    <url>/2018/10/08/%E5%9C%A8-Visual-Studio-Code-%E4%B8%AD%E4%BD%BF%E7%94%A8-MINGW32-%E4%BD%9C%E4%B8%BA%E7%BB%88%E7%AB%AF/</url>
+    <content><![CDATA[<p>打开 Visual Studio Code 的设置，按如下配置即可：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="comment">// 找到您的 git 目录</span></span><br><span class="line">  <span class="attr">&quot;terminal.integrated.shell.windows&quot;</span>: <span class="string">&quot;C:\\Program Files (x86)\\Git\\bin\\bash.exe&quot;</span>,</span><br><span class="line">  <span class="attr">&quot;terminal.integrated.shellArgs.windows&quot;</span>: [<span class="string">&quot;--login&quot;</span>, <span class="string">&quot;-i&quot;</span>],</span><br><span class="line">  <span class="comment">// 需要的环境变量</span></span><br><span class="line">  <span class="attr">&quot;terminal.integrated.env.windows&quot;</span>: &#123;</span><br><span class="line">    <span class="attr">&quot;HOME&quot;</span>: <span class="string">&quot;/d/austinluo/Documents/githome&quot;</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>附：</p>
+<p>我自己修改了当前用户的个人文件夹，通过上述方式可以解决 VSC 中 terminal 的 HOME 位置不对的问题（可以正常加载 .ssh 及相关的 key），但 VSC 默认自带的 Git 仍然会找到系统默认位置的个人文件夹，这个可以通过 junction 命令来解决：</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 在系统默认的个人文件夹下创建迁移过的新位置的软连接</span></span><br><span class="line">junction64.exe -s C:\Users\austinluo\Documents -s D:\austinluo\Documents</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>通过注册表完整设置和迁移个人文件夹位置可能不会出现上述情况。</p>
+</blockquote>
+]]></content>
+      <tags>
+        <tag>VSC</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决 systemd-journald 服务占用内存过高的问题</title>
+    <url>/2019/08/20/%E8%A7%A3%E5%86%B3-systemd-journald-%E6%9C%8D%E5%8A%A1%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E8%BF%87%E9%AB%98%E7%9A%84%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h1 id="解决-systemd-journald-服务占用内存过高的问题"><a href="#解决-systemd-journald-服务占用内存过高的问题" class="headerlink" title="解决 systemd-journald 服务占用内存过高的问题"></a>解决 systemd-journald 服务占用内存过高的问题</h1><h2 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h2><p>生产环境机器发现内存占用很高：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">[root@node132 /run/log/journal]# free -h</span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:           125G         87G         10G        323M         27G         36G</span><br><span class="line">Swap:            0B          0B          0B</span><br></pre></td></tr></table></figure>
+
+<p>排查发现，是 systemd-journal 占用了过高的内存：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">[root@node173 /run/log/journal]# top -o %MEM -n 1 -b | head -n17</span><br><span class="line">top - 16:29:45 up 167 days, 15:01,  1 user,  load average: 0.15, 0.20, 0.29</span><br><span class="line">Tasks: 623 total,   2 running, 621 sleeping,   0 stopped,   0 zombie</span><br><span class="line">%Cpu(s):  0.4 us,  0.2 sy,  0.0 ni, 99.4 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st</span><br><span class="line">KiB Mem : 13138539+total,  2088144 free, 93968128 used, 35329120 buff/cache</span><br><span class="line">KiB Swap:        0 total,        0 free,        0 used. 36300876 avail Mem</span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line"> 6764 root      20   0   81.8g  81.7g   5580 S   0.0 65.2 693:59.06 systemd-journal</span><br><span class="line">18038 root      20   0   34.9g 976.9m  14360 S   0.0  0.8  43:07.76 java</span><br><span class="line"> 8386 root      20   0 8070328 806540  17436 S   0.0  0.6   5347:53 dockerd-current</span><br><span class="line"> 8442 root      20   0 5189372 540292   4600 S   0.0  0.4 537:15.83 docker-containe</span><br><span class="line"> 5792 root      20   0 2302960 374132   8976 S   0.0  0.3 709:40.18 java</span><br><span class="line">20023 root      20   0 2173620 339624   8976 S   0.0  0.3  63:39.12 java</span><br><span class="line">41196 root      20   0 7651664 323728   9880 S   0.0  0.2  37077:57 cadvisor</span><br><span class="line">11116 root      20   0 5099056 317780  15268 S   0.0  0.2  19:47.50 java</span><br><span class="line">35339 root      20   0 2149764 311520   9008 S   0.0  0.2  56:52.01 java</span><br><span class="line">18662 root      20   0 4730832 190692  36380 S   0.0  0.1   8338:20 kubelet</span><br></pre></td></tr></table></figure>
+
+<p>查看相关配置发现，systemd-journal 服务没有启用持久化，日志保留在内存，因此只需要启用持久化即可解决该问题。</p>
+<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><p><strong>1. 首先将日志目录移动到 /data 路径下</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir /data/<span class="built_in">log</span></span><br><span class="line">mv /var/<span class="built_in">log</span>/* /data/<span class="built_in">log</span>/</span><br><span class="line">rm -r /var/<span class="built_in">log</span></span><br><span class="line"><span class="comment"># 重定向整个日志目录到 /data/log</span></span><br><span class="line">ln -s /data/<span class="built_in">log</span> /var</span><br></pre></td></tr></table></figure>
+
+<p><strong>2. 修改服务配置，重启服务</strong></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vim /etc/systemd/journald.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置并取消注释以下几项</span></span><br><span class="line">Storage=persistent</span><br><span class="line">SystemMaxUse=4G</span><br><span class="line">SystemMaxFileSize=1G</span><br><span class="line">RuntimeMaxUse=2G</span><br><span class="line">RuntimeMaxFileSize=1G</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启服务</span></span><br><span class="line">systemctl restart systemd-journald</span><br></pre></td></tr></table></figure>
+
+<p>重启服务后，日志将会被直接持久化到磁盘，不再占用过多内存。</p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
+<li><a href="https://www.cnblogs.com/sparkdev/p/8795141.html">https://www.cnblogs.com/sparkdev/p/8795141.html</a></li>
+<li><a href="https://blog.steamedfish.org/posts/2019/06/systemd-journal-%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E7%9A%84%E9%97%AE%E9%A2%98/">https://blog.steamedfish.org/posts/2019/06/systemd-journal-%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E7%9A%84%E9%97%AE%E9%A2%98/</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>Linux</tag>
+        <tag>内存</tag>
+        <tag>systemd-journald</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪</title>
+    <url>/2018/06/15/%E8%AE%B0%E4%B8%80%E6%AC%A1-NET-Framework-%E4%B8%8D%E5%85%BC%E5%AE%B9-HTTP-COOKIE-%E5%8D%8F%E8%AE%AE%E6%A0%87%E5%87%86%E7%9A%84%E9%97%AE%E9%A2%98%E8%B7%9F%E8%B8%AA/</url>
+    <content><![CDATA[<p>我们在后端系统实现了 HTTP 请求的代理类，用于请求其他第三方系统。大致的请求流程是这样的：</p>
+<p>![](/images/记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪-1.png)</p>
+<p>消费系统不能直接请求业务系统的 HTTP 接口，需要由中间的 HttpHelper 代理请求。其中 HttpHelper 接受消费系统传入的各种参数，包括要请求的 URL、METHOD、HEAD、BODY 等，在实际生产中一直运行得很好，直到如下异常的出现：</p>
+<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">System.Net.CookieException: Cookie format error.</span><br><span class="line">   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>跟进异常信息，很容易知道是设置 Cookie 时发生的异常。根据请求端传入的 HEAD 信息排查，我们很容易还原故障现场：传入 HTTP 头信息 <code>Cookie: expires=Fri, 15 Jun 2018 15:19:14 GMT</code></p>
+<p>![](/images/记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪-2.png)</p>
+<p>这里是在设置 Cookie 的过期时间，并且这个时间看起来也正常，并没有格式错误或者时间不存在的错误。看起来问题不出在时间本身上。上网查查 HTTP 规范，根据 HTTP Cookie 协议，也是允许如下形式的字符串的，看起来也没有什么问题：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="attribute">Set-Cookie</span><span class="punctuation">: </span>sessionToken=abc123; Expires=Wed, 09 Jun 2021 10:18:14 GMT</span><br></pre></td></tr></table></figure>
+
+<p>既然异常是微软代码抛出来的，也给了具体抛出异常的方法的地方，那么我们就来翻翻微软代码吧。终于，在微软代码 System.Net.Cookie.VerifySetDefaults:L382 发现了问题所在。在这里，微软在校验 Cookie 值时，如果发现指定的值字符串中有保留字符（“,”、”;”），则要求该值必须使用双引号引起来，否则就会抛出异常。查看我们请求的头，在 expires 的值“Fri, 15 Jun 2018 15:19:14 GMT”中，的确有“,”存在，并且值也并未使用双引号引起来。于是我尝试修改传入的 HTTP 头参数：</p>
+<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="attribute">Cookie</span><span class="punctuation">: </span>expires=“Fri, 15 Jun 2018 15:19:14 GMT”</span><br></pre></td></tr></table></figure>
+
+<p>很自然，异常不再存在了，目前看起来的确是微软的这段代码导致了抛出异常。</p>
+<p>你们我们来看看，这个值到底是不是可以去加双引号吧。继续上网翻文档，在 <code>rfc2965#section-3.1</code> 和 <code>rfc6265#section-4.1.1</code> 中提到，值可以是字符串或引号引起来的字符串（<code>quoted-string</code>），这是 在 HTTP State Management Mechanism 中有所规定的。那么我们可以很放心地做这个兼容性处理了，即，当传入的 Cookie 值包含保留字符，并且未被双引号引起来时（一定会产生异常），我们自动地追加双引号，把值引起来，这样既可避免微软对值进行严格校验时抛出异常了。</p>
+<p>但是，此事还没有到此为止，我们实际来试试，加了双引号之后，业务系统是否能够正确收到消费系统传入的头呢？收到的头，是否为消费系统的正确意图呢？</p>
+<p>![](/images/记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪-3.png)</p>
+<p>值得注意的是，在业务系统里获取到的 Cookie 值，是添加了引号的值，并不是严格地与消费系统里传入的文本一致。</p>
+<p>到此为止，应对这个异常便有两个方案了：</p>
+<ol>
+<li>传入的 Cookie 值包含保留字符，并且未被双引号引起来时（一定会产生异常），我们自动地追加双引号。</li>
+<li>什么都不做，按原意抛出异常，提醒调用者更正 HTTP 头信息的格式。</li>
+</ol>
+<p>在我们的项目中，由于情况特殊（使用场景为后端服务之间的通信交互），一般不涉及到 Cookie 的设置，并且消费服务可能由很多个不同的团队实现，而业务服务可以统一处理添加的双引号，因此我们采用了方案 1。至于其他场景，实际上个人偏向于采用方案 2，不掩盖任何问题——特别是因为加了双引号之后，请求接受端接收到的值，不能完全原样表达请求发起端设置的值。</p>
+<h3 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h3><ul>
+<li><a href="https://en.wikipedia.org/wiki/HTTP_cookie">https://en.wikipedia.org/wiki/HTTP_cookie</a></li>
+<li><a href="https://referencesource.microsoft.com/#System/net/System/Net/cookie.cs,67f8e4d3cb862668">https://referencesource.microsoft.com/#System/net/System/Net/cookie.cs,67f8e4d3cb862668</a></li>
+<li><a href="https://referencesource.microsoft.com/#System/net/System/Net/cookie.cs,dca3e494aed8e006">https://referencesource.microsoft.com/#System/net/System/Net/cookie.cs,dca3e494aed8e006</a></li>
+<li><a href="https://tools.ietf.org/html/rfc6265#section-4.1.1">https://tools.ietf.org/html/rfc6265#section-4.1.1</a></li>
+<li><a href="https://tools.ietf.org/html/rfc2965#section-3.1">https://tools.ietf.org/html/rfc2965#section-3.1</a></li>
+<li><a href="https://tools.ietf.org/html/rfc2616">https://tools.ietf.org/html/rfc2616</a></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>http</tag>
+        <tag>.net</tag>
+        <tag>Cookie</tag>
       </tags>
   </entry>
   <entry>
@@ -737,78 +809,6 @@
       </tags>
   </entry>
   <entry>
-    <title>解决 systemd-journald 服务占用内存过高的问题</title>
-    <url>/2019/08/20/%E8%A7%A3%E5%86%B3-systemd-journald-%E6%9C%8D%E5%8A%A1%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E8%BF%87%E9%AB%98%E7%9A%84%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h1 id="解决-systemd-journald-服务占用内存过高的问题"><a href="#解决-systemd-journald-服务占用内存过高的问题" class="headerlink" title="解决 systemd-journald 服务占用内存过高的问题"></a>解决 systemd-journald 服务占用内存过高的问题</h1><h2 id="问题排查"><a href="#问题排查" class="headerlink" title="问题排查"></a>问题排查</h2><p>生产环境机器发现内存占用很高：</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">[root@node132 /run/log/journal]# free -h</span><br><span class="line">              total        used        free      shared  buff/cache   available</span><br><span class="line">Mem:           125G         87G         10G        323M         27G         36G</span><br><span class="line">Swap:            0B          0B          0B</span><br></pre></td></tr></table></figure>
-
-<p>排查发现，是 systemd-journal 占用了过高的内存：</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">[root@node173 /run/log/journal]# top -o %MEM -n 1 -b | head -n17</span><br><span class="line">top - 16:29:45 up 167 days, 15:01,  1 user,  load average: 0.15, 0.20, 0.29</span><br><span class="line">Tasks: 623 total,   2 running, 621 sleeping,   0 stopped,   0 zombie</span><br><span class="line">%Cpu(s):  0.4 us,  0.2 sy,  0.0 ni, 99.4 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st</span><br><span class="line">KiB Mem : 13138539+total,  2088144 free, 93968128 used, 35329120 buff/cache</span><br><span class="line">KiB Swap:        0 total,        0 free,        0 used. 36300876 avail Mem</span><br><span class="line"></span><br><span class="line">  PID USER      PR  NI    VIRT    RES    SHR S  %CPU %MEM     TIME+ COMMAND</span><br><span class="line"> 6764 root      20   0   81.8g  81.7g   5580 S   0.0 65.2 693:59.06 systemd-journal</span><br><span class="line">18038 root      20   0   34.9g 976.9m  14360 S   0.0  0.8  43:07.76 java</span><br><span class="line"> 8386 root      20   0 8070328 806540  17436 S   0.0  0.6   5347:53 dockerd-current</span><br><span class="line"> 8442 root      20   0 5189372 540292   4600 S   0.0  0.4 537:15.83 docker-containe</span><br><span class="line"> 5792 root      20   0 2302960 374132   8976 S   0.0  0.3 709:40.18 java</span><br><span class="line">20023 root      20   0 2173620 339624   8976 S   0.0  0.3  63:39.12 java</span><br><span class="line">41196 root      20   0 7651664 323728   9880 S   0.0  0.2  37077:57 cadvisor</span><br><span class="line">11116 root      20   0 5099056 317780  15268 S   0.0  0.2  19:47.50 java</span><br><span class="line">35339 root      20   0 2149764 311520   9008 S   0.0  0.2  56:52.01 java</span><br><span class="line">18662 root      20   0 4730832 190692  36380 S   0.0  0.1   8338:20 kubelet</span><br></pre></td></tr></table></figure>
-
-<p>查看相关配置发现，systemd-journal 服务没有启用持久化，日志保留在内存，因此只需要启用持久化即可解决该问题。</p>
-<h2 id="问题解决"><a href="#问题解决" class="headerlink" title="问题解决"></a>问题解决</h2><p><strong>1. 首先将日志目录移动到 /data 路径下</strong></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">mkdir /data/<span class="built_in">log</span></span><br><span class="line">mv /var/<span class="built_in">log</span>/* /data/<span class="built_in">log</span>/</span><br><span class="line">rm -r /var/<span class="built_in">log</span></span><br><span class="line"><span class="comment"># 重定向整个日志目录到 /data/log</span></span><br><span class="line">ln -s /data/<span class="built_in">log</span> /var</span><br></pre></td></tr></table></figure>
-
-<p><strong>2. 修改服务配置，重启服务</strong></p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">vim /etc/systemd/journald.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置并取消注释以下几项</span></span><br><span class="line">Storage=persistent</span><br><span class="line">SystemMaxUse=4G</span><br><span class="line">SystemMaxFileSize=1G</span><br><span class="line">RuntimeMaxUse=2G</span><br><span class="line">RuntimeMaxFileSize=1G</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重启服务</span></span><br><span class="line">systemctl restart systemd-journald</span><br></pre></td></tr></table></figure>
-
-<p>重启服务后，日志将会被直接持久化到磁盘，不再占用过多内存。</p>
-<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ul>
-<li><a href="https://www.cnblogs.com/sparkdev/p/8795141.html">https://www.cnblogs.com/sparkdev/p/8795141.html</a></li>
-<li><a href="https://blog.steamedfish.org/posts/2019/06/systemd-journal-%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E7%9A%84%E9%97%AE%E9%A2%98/">https://blog.steamedfish.org/posts/2019/06/systemd-journal-%E5%8D%A0%E7%94%A8%E5%86%85%E5%AD%98%E7%9A%84%E9%97%AE%E9%A2%98/</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>Linux</tag>
-        <tag>内存</tag>
-        <tag>systemd-journald</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪</title>
-    <url>/2018/06/15/%E8%AE%B0%E4%B8%80%E6%AC%A1-NET-Framework-%E4%B8%8D%E5%85%BC%E5%AE%B9-HTTP-COOKIE-%E5%8D%8F%E8%AE%AE%E6%A0%87%E5%87%86%E7%9A%84%E9%97%AE%E9%A2%98%E8%B7%9F%E8%B8%AA/</url>
-    <content><![CDATA[<p>我们在后端系统实现了 HTTP 请求的代理类，用于请求其他第三方系统。大致的请求流程是这样的：</p>
-<p>![](/images/记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪-1.png)</p>
-<p>消费系统不能直接请求业务系统的 HTTP 接口，需要由中间的 HttpHelper 代理请求。其中 HttpHelper 接受消费系统传入的各种参数，包括要请求的 URL、METHOD、HEAD、BODY 等，在实际生产中一直运行得很好，直到如下异常的出现：</p>
-<figure class="highlight csharp"><table><tr><td class="code"><pre><span class="line">System.Net.CookieException: Cookie format error.</span><br><span class="line">   at System.Net.CookieContainer.CookieCutter(Uri uri, String headerName, String setCookieHeader, Boolean isThrow)</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<p>跟进异常信息，很容易知道是设置 Cookie 时发生的异常。根据请求端传入的 HEAD 信息排查，我们很容易还原故障现场：传入 HTTP 头信息 <code>Cookie: expires=Fri, 15 Jun 2018 15:19:14 GMT</code></p>
-<p>![](/images/记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪-2.png)</p>
-<p>这里是在设置 Cookie 的过期时间，并且这个时间看起来也正常，并没有格式错误或者时间不存在的错误。看起来问题不出在时间本身上。上网查查 HTTP 规范，根据 HTTP Cookie 协议，也是允许如下形式的字符串的，看起来也没有什么问题：</p>
-<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="attribute">Set-Cookie</span><span class="punctuation">: </span>sessionToken=abc123; Expires=Wed, 09 Jun 2021 10:18:14 GMT</span><br></pre></td></tr></table></figure>
-
-<p>既然异常是微软代码抛出来的，也给了具体抛出异常的方法的地方，那么我们就来翻翻微软代码吧。终于，在微软代码 System.Net.Cookie.VerifySetDefaults:L382 发现了问题所在。在这里，微软在校验 Cookie 值时，如果发现指定的值字符串中有保留字符（“,”、”;”），则要求该值必须使用双引号引起来，否则就会抛出异常。查看我们请求的头，在 expires 的值“Fri, 15 Jun 2018 15:19:14 GMT”中，的确有“,”存在，并且值也并未使用双引号引起来。于是我尝试修改传入的 HTTP 头参数：</p>
-<figure class="highlight http"><table><tr><td class="code"><pre><span class="line"><span class="attribute">Cookie</span><span class="punctuation">: </span>expires=“Fri, 15 Jun 2018 15:19:14 GMT”</span><br></pre></td></tr></table></figure>
-
-<p>很自然，异常不再存在了，目前看起来的确是微软的这段代码导致了抛出异常。</p>
-<p>你们我们来看看，这个值到底是不是可以去加双引号吧。继续上网翻文档，在 <code>rfc2965#section-3.1</code> 和 <code>rfc6265#section-4.1.1</code> 中提到，值可以是字符串或引号引起来的字符串（<code>quoted-string</code>），这是 在 HTTP State Management Mechanism 中有所规定的。那么我们可以很放心地做这个兼容性处理了，即，当传入的 Cookie 值包含保留字符，并且未被双引号引起来时（一定会产生异常），我们自动地追加双引号，把值引起来，这样既可避免微软对值进行严格校验时抛出异常了。</p>
-<p>但是，此事还没有到此为止，我们实际来试试，加了双引号之后，业务系统是否能够正确收到消费系统传入的头呢？收到的头，是否为消费系统的正确意图呢？</p>
-<p>![](/images/记一次 .NET Framework 不兼容 HTTP COOKIE 协议标准的问题跟踪-3.png)</p>
-<p>值得注意的是，在业务系统里获取到的 Cookie 值，是添加了引号的值，并不是严格地与消费系统里传入的文本一致。</p>
-<p>到此为止，应对这个异常便有两个方案了：</p>
-<ol>
-<li>传入的 Cookie 值包含保留字符，并且未被双引号引起来时（一定会产生异常），我们自动地追加双引号。</li>
-<li>什么都不做，按原意抛出异常，提醒调用者更正 HTTP 头信息的格式。</li>
-</ol>
-<p>在我们的项目中，由于情况特殊（使用场景为后端服务之间的通信交互），一般不涉及到 Cookie 的设置，并且消费服务可能由很多个不同的团队实现，而业务服务可以统一处理添加的双引号，因此我们采用了方案 1。至于其他场景，实际上个人偏向于采用方案 2，不掩盖任何问题——特别是因为加了双引号之后，请求接受端接收到的值，不能完全原样表达请求发起端设置的值。</p>
-<h3 id="参考："><a href="#参考：" class="headerlink" title="参考："></a>参考：</h3><ul>
-<li><a href="https://en.wikipedia.org/wiki/HTTP_cookie">https://en.wikipedia.org/wiki/HTTP_cookie</a></li>
-<li><a href="https://referencesource.microsoft.com/#System/net/System/Net/cookie.cs,67f8e4d3cb862668">https://referencesource.microsoft.com/#System/net/System/Net/cookie.cs,67f8e4d3cb862668</a></li>
-<li><a href="https://referencesource.microsoft.com/#System/net/System/Net/cookie.cs,dca3e494aed8e006">https://referencesource.microsoft.com/#System/net/System/Net/cookie.cs,dca3e494aed8e006</a></li>
-<li><a href="https://tools.ietf.org/html/rfc6265#section-4.1.1">https://tools.ietf.org/html/rfc6265#section-4.1.1</a></li>
-<li><a href="https://tools.ietf.org/html/rfc2965#section-3.1">https://tools.ietf.org/html/rfc2965#section-3.1</a></li>
-<li><a href="https://tools.ietf.org/html/rfc2616">https://tools.ietf.org/html/rfc2616</a></li>
-</ul>
-]]></content>
-      <tags>
-        <tag>http</tag>
-        <tag>.net</tag>
-        <tag>Cookie</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>设置 Windows 10 子系统通过代理上网</title>
     <url>/2019/05/07/%E8%AE%BE%E7%BD%AE-Windows-10-%E5%AD%90%E7%B3%BB%E7%BB%9F%E9%80%9A%E8%BF%87%E4%BB%A3%E7%90%86%E4%B8%8A%E7%BD%91/</url>
     <content><![CDATA[<h2 id="安装-Windows-10-Ubuntu-子系统"><a href="#安装-Windows-10-Ubuntu-子系统" class="headerlink" title="安装 Windows 10 Ubuntu 子系统"></a>安装 Windows 10 Ubuntu 子系统</h2><p>（网上很多教程，略）</p>
@@ -888,7 +888,7 @@
     <title>【译】Go 语言实践：编写可维护的程序的建议</title>
     <url>/2018/10/27/%E3%80%90%E8%AF%91%E3%80%91Go-%E8%AF%AD%E8%A8%80%E5%AE%9E%E8%B7%B5%EF%BC%9A%E7%BC%96%E5%86%99%E5%8F%AF%E7%BB%B4%E6%8A%A4%E7%9A%84%E7%A8%8B%E5%BA%8F%E7%9A%84%E5%BB%BA%E8%AE%AE/</url>
     <content><![CDATA[<p><strong>译者注</strong></p>
-<p>本文为 <strong>QCon 2018 上海站</strong>主题演讲嘉宾、Heptio 资深工程师、著名 Go 语言专家 <a href="https://2018.qconshanghai.com/speaker/2503">David Cheney</a> 关于 Go 语言实践的英文分享。为方便大家阅读，在此由 <a href="https://www.udnz.com/">Austin Luo</a> 翻译为中文，在文中难以理解之处，也特别增加了译者的理解说明。翻译水平有限，如有偏颇之处，烦请联系我（<a href="mailto:&#x75;&#x6f;&#110;&#117;&#110;&#x40;&#49;&#x36;&#51;&#x2e;&#x63;&#x6f;&#109;">&#x75;&#x6f;&#110;&#117;&#110;&#x40;&#49;&#x36;&#51;&#x2e;&#x63;&#x6f;&#109;</a>）更正。转载请注明出处，保留本节译者注。</p>
+<p>本文为 <strong>QCon 2018 上海站</strong>主题演讲嘉宾、Heptio 资深工程师、著名 Go 语言专家 <a href="https://2018.qconshanghai.com/speaker/2503">David Cheney</a> 关于 Go 语言实践的英文分享。为方便大家阅读，在此由 <a href="https://www.udnz.com/">Austin Luo</a> 翻译为中文，在文中难以理解之处，也特别增加了译者的理解说明。翻译水平有限，如有偏颇之处，烦请联系我（<a href="mailto:&#x75;&#111;&#110;&#117;&#110;&#64;&#x31;&#54;&#51;&#x2e;&#x63;&#x6f;&#109;">&#x75;&#111;&#110;&#117;&#110;&#64;&#x31;&#54;&#51;&#x2e;&#x63;&#x6f;&#109;</a>）更正。转载请注明出处，保留本节译者注。</p>
 <hr>
 <p><strong>目录</strong></p>
 <ul>
@@ -1680,7 +1680,7 @@ fmt.Println(reflect.DeepEqual(s1, s2))
 </blockquote>
 <p>【完】</p>
 <blockquote>
-<p>翻译水平有限，如有偏颇之处，烦请<a href="http://shang.qq.com/wpa/qunwpa?idkey=2aa3ef00102d1db4f2275d835aabf3eb043e8ba7b22ead791ba469cdb198a8cc">联系我</a>更正。转载请注明出处。翻译：Austin Luo；邮箱：<a href="mailto:&#117;&#x6f;&#x6e;&#117;&#110;&#x40;&#49;&#54;&#x33;&#x2e;&#x63;&#111;&#x6d;">&#117;&#x6f;&#x6e;&#117;&#110;&#x40;&#49;&#54;&#x33;&#x2e;&#x63;&#111;&#x6d;</a></p>
+<p>翻译水平有限，如有偏颇之处，烦请<a href="http://shang.qq.com/wpa/qunwpa?idkey=2aa3ef00102d1db4f2275d835aabf3eb043e8ba7b22ead791ba469cdb198a8cc">联系我</a>更正。转载请注明出处。翻译：Austin Luo；邮箱：<a href="mailto:&#x75;&#x6f;&#110;&#x75;&#x6e;&#x40;&#49;&#54;&#x33;&#x2e;&#x63;&#x6f;&#x6d;">&#x75;&#x6f;&#110;&#x75;&#x6e;&#x40;&#49;&#54;&#x33;&#x2e;&#x63;&#x6f;&#x6d;</a></p>
 </blockquote>
 ]]></content>
       <tags>
